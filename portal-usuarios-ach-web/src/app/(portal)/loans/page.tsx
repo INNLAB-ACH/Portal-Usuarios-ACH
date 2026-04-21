@@ -51,6 +51,27 @@ export default function LoansPage() {
         ))}
       </section>
 
+      <section className="glass-card p-4 md:p-5">
+        <h2 className="text-base font-semibold">Deuda por categoria</h2>
+        <div className="mt-4 space-y-3">
+          {[
+            { label: "Servicios publicos", value: 445700 },
+            { label: "Planes de celular", value: 197000 },
+            { label: "Internet y TV", value: 256000 },
+          ].map((entry) => (
+            <div key={entry.label}>
+              <div className="mb-1 flex justify-between text-sm">
+                <span>{entry.label}</span>
+                <strong>{formatCurrency(entry.value)}</strong>
+              </div>
+              <div className="h-2 rounded-full bg-muted">
+                <div className="h-2 rounded-full bg-secondary" style={{ width: `${Math.min(100, (entry.value / 445700) * 100)}%` }} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {selectedLoan ? (
         <PaymentWizard
           title={`Autorizar pago - ${selectedLoan.store}`}

@@ -30,43 +30,22 @@ export default function DashboardPage() {
       <section className="grid gap-4 xl:grid-cols-[1.4fr_1fr]">
         <RecentTransactions />
         <div className="glass-card p-4 md:p-5">
-          <h2 className="text-base font-semibold">Deudas por categoria</h2>
-          <div className="mt-4 space-y-3">
-            {[
-              { label: "Servicios publicos", value: 445700 },
-              { label: "Planes de celular", value: 197000 },
-              { label: "Internet y TV", value: 256000 },
-            ].map((entry) => (
-              <div key={entry.label}>
-                <div className="mb-1 flex justify-between text-sm">
-                  <span>{entry.label}</span>
-                  <strong>{formatCurrency(entry.value)}</strong>
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-base font-semibold">Pagos pendientes</h2>
+            <span className="rounded-full bg-amber-100 px-2 py-1 text-xs text-amber-700">{pendingPayments.length} por pagar</span>
+          </div>
+          <div className="space-y-3">
+            {pendingPayments.map((bill) => (
+              <article key={bill.id} className="rounded-lg border border-border/80 bg-muted/40 p-3">
+                <p className="text-sm font-medium">{bill.service} - {bill.provider}</p>
+                <p className="mt-1 text-xs text-muted-foreground">Vence {bill.dueDate}</p>
+                <div className="mt-3 flex items-center justify-between">
+                  <strong className="text-primary">{formatCurrency(bill.amount)}</strong>
+                  <Button size="sm" onClick={() => setSelectedBillId(bill.id)}>Pagar</Button>
                 </div>
-                <div className="h-2 rounded-full bg-muted">
-                  <div className="h-2 rounded-full bg-secondary" style={{ width: `${Math.min(100, (entry.value / 445700) * 100)}%` }} />
-                </div>
-              </div>
+              </article>
             ))}
           </div>
-        </div>
-      </section>
-
-      <section className="glass-card p-4 md:p-5">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-base font-semibold">Pagos pendientes</h2>
-          <span className="rounded-full bg-amber-100 px-2 py-1 text-xs text-amber-700">{pendingPayments.length} por pagar</span>
-        </div>
-        <div className="grid gap-3 md:grid-cols-2">
-          {pendingPayments.map((bill) => (
-            <article key={bill.id} className="rounded-lg border border-border/80 bg-muted/40 p-3">
-              <p className="text-sm font-medium">{bill.service} - {bill.provider}</p>
-              <p className="mt-1 text-xs text-muted-foreground">Vence {bill.dueDate}</p>
-              <div className="mt-3 flex items-center justify-between">
-                <strong className="text-primary">{formatCurrency(bill.amount)}</strong>
-                <Button size="sm" onClick={() => setSelectedBillId(bill.id)}>Pagar</Button>
-              </div>
-            </article>
-          ))}
         </div>
       </section>
 
