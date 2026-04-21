@@ -1,19 +1,49 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ChevronLeft, ChevronRight, Download, Search, Sparkles } from "lucide-react";
+import {
+  Building2,
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  Flame,
+  MoreVertical,
+  Search,
+  Smartphone,
+  Sparkles,
+  Tv,
+  Wifi,
+  X,
+  Zap,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PaymentWizard } from "@/components/payment/payment-wizard";
 import { bills } from "@/data/mock-data";
 import { formatCurrency } from "@/lib/utils";
+import { BankAccount } from "@/types/portal";
 
 type AutoPayConfig = {
   enabled: boolean;
   debitAccount: "Cuenta principal" | "Cuenta nomina";
   day: number;
+  accountId?: string;
+  accountAlias?: string;
 };
 
 const AUTOPAY_KEY = "ach-autopay-config";
+const ACCOUNTS_STORAGE_KEY = "ach-accounts-list";
+
+const fallbackAccounts: BankAccount[] = [
+  {
+    id: "AC-001",
+    alias: "Principal nomina",
+    bank: "Bancolombia",
+    accountType: "Ahorros",
+    accountNumber: "*******1289",
+    country: "Colombia",
+    isPrimary: true,
+  },
+];
 
 export default function BillsPage() {
   const [selected, setSelected] = useState<string[]>([]);
@@ -24,6 +54,11 @@ export default function BillsPage() {
   const [autoPayOnly, setAutoPayOnly] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [openWizard, setOpenWizard] = useState(false);
+  const [menuBillId, setMenuBillId] = useState<string | null>(null);
+  const [detailsBillId, setDetailsBillId] = useState<string | null>(null);
+  const [autopayBillId, setAutopayBillId] = useState<string | null>(null);
+  const [autopayAccountId, setAutopayAccountId] = useState("");
+  const [autopayDay, setAutopayDay] = useState(25);
   const [autoPay, setAutoPay] = useState<Record<string, AutoPayConfig>>(() => {
     if (typeof window === "undefined") {
       return {};
@@ -31,6 +66,14 @@ export default function BillsPage() {
 
     const raw = localStorage.getItem(AUTOPAY_KEY);
     return raw ? (JSON.parse(raw) as Record<string, AutoPayConfig>) : {};
+  });
+  const [accounts] = useState<BankAccount[]>(() => {
+    if (typeof window === "undefined") {
+      return fallbackAccounts;
+    }
+
+    const raw = localStorage.getItem(ACCOUNTS_STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as BankAccount[]) : fallbackAccounts;
   });
 
   const pageSize = 5;
@@ -71,6 +114,8 @@ export default function BillsPage() {
   }, [autoPay]);
 
   const selectedBills = activeBills.filter((bill) => selected.includes(bill.id));
+  const detailBill = futureBills.find((bill) => bill.id === detailsBillId) ?? null;
+  const autopayBill = futureBills.find((bill) => bill.id === autopayBillId) ?? null;
 
   const toggleSelection = (billId: string) => {
     setSelected((prev) =>
@@ -118,6 +163,46 @@ export default function BillsPage() {
         day,
       },
     }));
+  };
+
+  const serviceIcon = (service: string) => {
+    const normalized = service.toLowerCase();
+    if (normalized.includes("energia")) return Zap;
+    if (normalized.includes("gas")) return Flame;
+    if (normalized.includes("movil") || normalized.includes("celular")) return Smartphone;
+    if (normalized.includes("internet")) return Wifi;
+    if (normalized.includes("tv")) return Tv;
+    return Building2;
+  };
+
+  const openAutoPayModal = (billId: string) => {
+    const config = autoPay[billId];
+    const primary = accounts.find((account) => account.isPrimary) ?? accounts[0];
+    setAutopayBillId(billId);
+    setAutopayAccountId(config?.accountId ?? primary?.id ?? "");
+    setAutopayDay(config?.day ?? 25);
+    setMenuBillId(null);
+  };
+
+  const saveAutoPayForFutureBill = () => {
+    if (!autopayBillId || !autopayAccountId) {
+      return;
+    }
+
+    const account = accounts.find((item) => item.id === autopayAccountId);
+
+    setAutoPay((prev) => ({
+      ...prev,
+      [autopayBillId]: {
+        enabled: true,
+        debitAccount: account?.isPrimary ? "Cuenta principal" : "Cuenta nomina",
+        day: autopayDay,
+        accountId: autopayAccountId,
+        accountAlias: account?.alias,
+      },
+    }));
+
+    setAutopayBillId(null);
   };
 
   return (
@@ -195,180 +280,205 @@ export default function BillsPage() {
         </div>
       </section>
 
-      <section className="glass-card overflow-hidden">
-        <div className="border-b border-border/80 px-4 py-3">
-          <h2 className="font-semibold">Facturas futuras</h2>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-sm">
-            <thead>
-              <tr className="bg-muted/45 text-left text-xs uppercase tracking-wide text-muted-foreground">
-                <th className="px-4 py-3">Servicio</th>
-                <th className="px-4 py-3">Proveedor</th>
-                <th className="px-4 py-3">Vence</th>
-                <th className="px-4 py-3 text-right">Monto</th>
-                <th className="px-4 py-3">Accion</th>
-              </tr>
-            </thead>
-            <tbody>
-              {futureBills.length > 0 ? (
-                futureBills.map((bill) => {
-                  const config = autoPay[bill.id];
-
-                  return (
-                    <tr key={bill.id} className="border-t border-border/70">
-                      <td className="px-4 py-3">
-                        <p>{bill.service}</p>
-                        <p className="text-xs text-muted-foreground">{bill.id}</p>
-                      </td>
-                      <td className="px-4 py-3">{bill.provider}</td>
-                      <td className="px-4 py-3">{bill.dueDate}</td>
-                      <td className="px-4 py-3 text-right font-semibold text-primary">{formatCurrency(bill.amount)}</td>
-                      <td className="px-4 py-3">
-                        <Button
-                          size="sm"
-                          variant={config?.enabled ? "outline" : "default"}
-                          onClick={() => setAutoPayEnabled(bill.id, !config?.enabled)}
-                        >
-                          {config?.enabled ? "Autopago activo" : "Activar autopago"}
-                        </Button>
-                      </td>
-                    </tr>
-                  );
-                })
-              ) : (
-                <tr>
-                  <td colSpan={5} className="px-4 py-14 text-center text-sm text-muted-foreground">
-                    No hay facturas futuras para los filtros actuales.
-                  </td>
+      <section className="grid gap-4 xl:grid-cols-[1.35fr_0.65fr]">
+        <article className="glass-card overflow-hidden">
+          <div className="border-b border-border/80 px-4 py-3">
+            <h2 className="font-semibold">Facturas activas para pago</h2>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-sm">
+              <thead>
+                <tr className="bg-muted/45 text-left text-xs uppercase tracking-wide text-muted-foreground">
+                  <th className="px-4 py-3" />
+                  <th className="px-4 py-3">Servicio</th>
+                  <th className="px-4 py-3">Proveedor</th>
+                  <th className="px-4 py-3">Vence</th>
+                  <th className="px-4 py-3 text-right">Monto</th>
+                  <th className="px-4 py-3">Autopago</th>
+                  <th className="px-4 py-3">Accion</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </section>
+              </thead>
+              <tbody>
+                {paginatedActive.length > 0 ? (
+                  paginatedActive.map((bill) => {
+                    const isSelected = selected.includes(bill.id);
+                    const config = autoPay[bill.id];
 
-      <section className="glass-card overflow-hidden">
-        <div className="border-b border-border/80 px-4 py-3">
-          <h2 className="font-semibold">Facturas activas para pago</h2>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-sm">
-            <thead>
-              <tr className="bg-muted/45 text-left text-xs uppercase tracking-wide text-muted-foreground">
-                <th className="px-4 py-3" />
-                <th className="px-4 py-3">Servicio</th>
-                <th className="px-4 py-3">Proveedor</th>
-                <th className="px-4 py-3">Vence</th>
-                <th className="px-4 py-3 text-right">Monto</th>
-                <th className="px-4 py-3">Autopago</th>
-                <th className="px-4 py-3">Accion</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedActive.length > 0 ? (
-                paginatedActive.map((bill) => {
-                  const isSelected = selected.includes(bill.id);
-                  const config = autoPay[bill.id];
-
-                  return (
-                    <tr key={bill.id} className="border-t border-border/70 align-top">
-                      <td className="px-4 py-3">
-                        <input
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={() => toggleSelection(bill.id)}
-                        />
-                      </td>
-                      <td className="px-4 py-3">
-                        <p>{bill.service}</p>
-                        <p className="text-xs text-muted-foreground">{bill.id}</p>
-                      </td>
-                      <td className="px-4 py-3">{bill.provider}</td>
-                      <td className="px-4 py-3">{bill.dueDate}</td>
-                      <td className="px-4 py-3 text-right font-semibold text-primary">{formatCurrency(bill.amount)}</td>
-                      <td className="px-4 py-3">
-                        <label className="mb-2 flex items-center gap-2 text-xs">
+                    return (
+                      <tr key={bill.id} className="border-t border-border/70 align-top">
+                        <td className="px-4 py-3">
                           <input
                             type="checkbox"
-                            checked={Boolean(config?.enabled)}
-                            onChange={(event) => setAutoPayEnabled(bill.id, event.target.checked)}
+                            checked={isSelected}
+                            onChange={() => toggleSelection(bill.id)}
                           />
-                          Autopago
-                        </label>
-
-                        {config?.enabled ? (
-                          <div className="space-y-2 rounded-md border border-border/80 bg-muted/40 p-2 text-xs">
-                            <select
-                              value={config.debitAccount}
-                              onChange={(event) =>
-                                setAutoPayAccount(
-                                  bill.id,
-                                  event.target.value as AutoPayConfig["debitAccount"],
-                                )
-                              }
-                              className="h-8 w-full rounded border border-input bg-white px-2"
-                            >
-                              <option>Cuenta principal</option>
-                              <option>Cuenta nomina</option>
-                            </select>
+                        </td>
+                        <td className="px-4 py-3">
+                          <p>{bill.service}</p>
+                          <p className="text-xs text-muted-foreground">{bill.id}</p>
+                        </td>
+                        <td className="px-4 py-3">{bill.provider}</td>
+                        <td className="px-4 py-3">{bill.dueDate}</td>
+                        <td className="px-4 py-3 text-right font-semibold text-primary">{formatCurrency(bill.amount)}</td>
+                        <td className="px-4 py-3">
+                          <label className="mb-2 flex items-center gap-2 text-xs">
                             <input
-                              type="number"
-                              min={1}
-                              max={28}
-                              value={config.day}
-                              onChange={(event) => setAutoPayDay(bill.id, Number(event.target.value))}
-                              className="h-8 w-full rounded border border-input bg-white px-2"
+                              type="checkbox"
+                              checked={Boolean(config?.enabled)}
+                              onChange={(event) => setAutoPayEnabled(bill.id, event.target.checked)}
                             />
-                          </div>
-                        ) : null}
-                      </td>
-                      <td className="px-4 py-3">
-                        <Button size="sm" onClick={() => {
-                          setSelected([bill.id]);
-                          setOpenWizard(true);
-                        }}>
-                          Pagar
-                        </Button>
-                      </td>
-                    </tr>
-                  );
-                })
-              ) : (
-                <tr>
-                  <td colSpan={7} className="px-4 py-14 text-center text-sm text-muted-foreground">
-                    No hay facturas activas para pago con los filtros actuales.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+                            Autopago
+                          </label>
 
-        <footer className="flex items-center justify-between border-t border-border/70 px-4 py-3 text-sm">
-          <p className="text-muted-foreground">{activeBills.length} facturas activas para pago</p>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
-              disabled={currentPage === 1}
-            >
-              <ChevronLeft className="size-4" />
-            </Button>
-            <span>
-              Pagina {currentPage} de {totalPages}
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
-              disabled={currentPage === totalPages}
-            >
-              <ChevronRight className="size-4" />
-            </Button>
+                          {config?.enabled ? (
+                            <div className="space-y-2 rounded-md border border-border/80 bg-muted/40 p-2 text-xs">
+                              <select
+                                value={config.debitAccount}
+                                onChange={(event) =>
+                                  setAutoPayAccount(
+                                    bill.id,
+                                    event.target.value as AutoPayConfig["debitAccount"],
+                                  )
+                                }
+                                className="h-8 w-full rounded border border-input bg-white px-2"
+                              >
+                                <option>Cuenta principal</option>
+                                <option>Cuenta nomina</option>
+                              </select>
+                              <input
+                                type="number"
+                                min={1}
+                                max={28}
+                                value={config.day}
+                                onChange={(event) => setAutoPayDay(bill.id, Number(event.target.value))}
+                                className="h-8 w-full rounded border border-input bg-white px-2"
+                              />
+                            </div>
+                          ) : null}
+                        </td>
+                        <td className="px-4 py-3">
+                          <Button size="sm" onClick={() => {
+                            setSelected([bill.id]);
+                            setOpenWizard(true);
+                          }}>
+                            Pagar
+                          </Button>
+                        </td>
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <td colSpan={7} className="px-4 py-14 text-center text-sm text-muted-foreground">
+                      No hay facturas activas para pago con los filtros actuales.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
-        </footer>
+
+          <footer className="flex items-center justify-between border-t border-border/70 px-4 py-3 text-sm">
+            <p className="text-muted-foreground">{activeBills.length} facturas activas para pago</p>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className="size-4" />
+              </Button>
+              <span>
+                Pagina {currentPage} de {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+              >
+                <ChevronRight className="size-4" />
+              </Button>
+            </div>
+          </footer>
+        </article>
+
+        <aside className="glass-card overflow-hidden">
+          <div className="border-b border-border/80 px-4 py-3">
+            <h2 className="font-semibold">Facturas futuras</h2>
+            <p className="text-xs text-muted-foreground">Vista resumida</p>
+          </div>
+          <div className="max-h-[392px] space-y-3 overflow-y-auto p-3">
+            {futureBills.length > 0 ? (
+              futureBills.map((bill) => {
+                const config = autoPay[bill.id];
+                const Icon = serviceIcon(bill.service);
+
+                return (
+                  <article key={bill.id} className="relative min-h-[84px] rounded-lg border border-border/80 bg-muted/35 p-2.5">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex min-w-0 items-start gap-2">
+                        <span className="rounded-md bg-primary/10 p-1.5 text-primary">
+                          <Icon className="size-3.5" />
+                        </span>
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-semibold leading-tight">{bill.provider}</p>
+                          <p className="truncate text-[11px] text-muted-foreground">{bill.service}</p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        className="rounded-md p-1 text-muted-foreground hover:bg-background"
+                        onClick={() => setMenuBillId((prev) => (prev === bill.id ? null : bill.id))}
+                        aria-label="Opciones"
+                      >
+                        <MoreVertical className="size-4" />
+                      </button>
+                    </div>
+
+                    {menuBillId === bill.id ? (
+                      <div className="absolute right-2 top-9 z-10 w-44 rounded-md border border-border bg-white p-1 shadow-lg">
+                        <button
+                          type="button"
+                          className="w-full rounded px-2 py-1.5 text-left text-xs hover:bg-muted"
+                          onClick={() => {
+                            setDetailsBillId(bill.id);
+                            setMenuBillId(null);
+                          }}
+                        >
+                          Ver detalles
+                        </button>
+                        <button
+                          type="button"
+                          className="w-full rounded px-2 py-1.5 text-left text-xs hover:bg-muted"
+                          onClick={() => openAutoPayModal(bill.id)}
+                        >
+                          {config?.enabled ? "Editar autopago" : "Activar autopago"}
+                        </button>
+                      </div>
+                    ) : null}
+
+                    <div className="mt-2 flex items-center justify-between text-[11px]">
+                      <span className="text-muted-foreground">Vence {bill.dueDate}</span>
+                      <strong className="text-primary">{formatCurrency(bill.amount)}</strong>
+                    </div>
+
+                    <p className="mt-1 text-[10px] text-muted-foreground">
+                      {config?.enabled
+                        ? `Autopago activo (${config.accountAlias ?? "Cuenta configurada"})`
+                        : "Autopago no configurado"}
+                    </p>
+                  </article>
+                );
+              })
+            ) : (
+              <p className="p-2 text-center text-sm text-muted-foreground">
+                No hay facturas futuras para los filtros actuales.
+              </p>
+            )}
+          </div>
+        </aside>
       </section>
 
       <section className="glass-card overflow-hidden">
@@ -429,6 +539,98 @@ export default function BillsPage() {
             setSelected([]);
           }}
         />
+      ) : null}
+
+      {detailBill ? (
+        <div className="fixed inset-0 z-40 grid place-items-center bg-black/35 p-4">
+          <div className="glass-card w-full max-w-md space-y-4 border border-primary/20 bg-white p-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-primary">Detalle de factura</h3>
+              <button
+                type="button"
+                className="rounded-md p-1 hover:bg-muted"
+                onClick={() => setDetailsBillId(null)}
+                aria-label="Cerrar"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            <div className="space-y-2 text-sm">
+              <p><span className="text-muted-foreground">Empresa:</span> <strong>{detailBill.provider}</strong></p>
+              <p><span className="text-muted-foreground">Servicio:</span> {detailBill.service}</p>
+              <p><span className="text-muted-foreground">Referencia:</span> {detailBill.id}</p>
+              <p><span className="text-muted-foreground">Vencimiento:</span> {detailBill.dueDate}</p>
+              <p><span className="text-muted-foreground">Monto:</span> <strong className="text-primary">{formatCurrency(detailBill.amount)}</strong></p>
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setDetailsBillId(null)}>Cerrar</Button>
+              <Button
+                onClick={() => {
+                  openAutoPayModal(detailBill.id);
+                  setDetailsBillId(null);
+                }}
+              >
+                Activar autopago
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {autopayBill ? (
+        <div className="fixed inset-0 z-40 grid place-items-center bg-black/35 p-4">
+          <div className="glass-card w-full max-w-md space-y-4 border border-primary/20 bg-white p-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-primary">Configurar autopago</h3>
+              <button
+                type="button"
+                className="rounded-md p-1 hover:bg-muted"
+                onClick={() => setAutopayBillId(null)}
+                aria-label="Cerrar"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            <p className="text-sm text-muted-foreground">
+              {autopayBill.provider} - {autopayBill.service}
+            </p>
+
+            <label className="block text-sm">
+              Cuenta para debito
+              <select
+                className="mt-1 h-10 w-full rounded-md border border-input bg-white px-3"
+                value={autopayAccountId}
+                onChange={(event) => setAutopayAccountId(event.target.value)}
+              >
+                {accounts.map((account) => (
+                  <option key={account.id} value={account.id}>
+                    {account.alias} - {account.bank}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="block text-sm">
+              Dia de cobro
+              <input
+                type="number"
+                min={1}
+                max={28}
+                className="mt-1 h-10 w-full rounded-md border border-input px-3"
+                value={autopayDay}
+                onChange={(event) => setAutopayDay(Number(event.target.value))}
+              />
+            </label>
+
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setAutopayBillId(null)}>Cancelar</Button>
+              <Button onClick={saveAutoPayForFutureBill}>Guardar autopago</Button>
+            </div>
+          </div>
+        </div>
       ) : null}
     </div>
   );
