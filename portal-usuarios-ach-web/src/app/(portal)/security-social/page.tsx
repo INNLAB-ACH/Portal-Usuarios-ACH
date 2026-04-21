@@ -20,7 +20,7 @@ type PlanillaPaymentRecord = {
   id: string;
   date: string;
   period: string;
-  paymentMethod: "cuenta" | "pse" | "presta";
+  paymentMethod: "cuenta-local" | "cuenta-internacional" | "pse" | "presta";
   paymentMethodLabel: string;
   total: number;
   health: number;
@@ -29,7 +29,7 @@ type PlanillaPaymentRecord = {
   solidarity: number;
 };
 
-type PaymentMode = "cuenta" | "pse" | "presta";
+type PaymentMode = "cuenta-local" | "cuenta-internacional" | "pse";
 
 const ACCOUNTS_STORAGE_KEY = "ach-accounts-list";
 const PRESTA_PILA_STORAGE_KEY = "ach-presta-pila-history";
@@ -72,7 +72,7 @@ export default function SecuritySocialPage() {
   const [period, setPeriod] = useState(periods[0]);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [salary, setSalary] = useState("2000000");
-  const [paymentMode, setPaymentMode] = useState<PaymentMode>("cuenta");
+  const [paymentMode, setPaymentMode] = useState<PaymentMode>("cuenta-local");
   const [selectedAccountId, setSelectedAccountId] = useState("");
   const [pseKey, setPseKey] = useState("");
   const [quickAlias, setQuickAlias] = useState("");
@@ -124,6 +124,16 @@ export default function SecuritySocialPage() {
     };
   }, [salaryValue, totalPila]);
 
+  const localAccounts = useMemo(
+    () => accounts.filter((account) => account.country === "Colombia"),
+    [accounts],
+  );
+
+  const internationalAccounts = useMemo(
+    () => accounts.filter((account) => account.country !== "Colombia"),
+    [accounts],
+  );
+
   const submitNovelty = (event: FormEvent) => {
     event.preventDefault();
     if (!noveltyType.trim()) {
@@ -148,9 +158,12 @@ export default function SecuritySocialPage() {
   };
 
   const openPlanillaModal = () => {
-    const primary = accounts.find((account) => account.isPrimary) ?? accounts[0];
-    setSelectedAccountId(primary?.id ?? "");
-    setPaymentMode("cuenta");
+    const primaryLocal = accounts.find(
+      (account) => account.country === "Colombia" && account.isPrimary,
+    );
+    const firstLocal = accounts.find((account) => account.country === "Colombia");
+    setSelectedAccountId((primaryLocal ?? firstLocal)?.id ?? "new-local");
+    setPaymentMode("cuenta-local");
     setPseKey("");
     setShowPaymentModal(true);
   };
@@ -200,7 +213,12 @@ export default function SecuritySocialPage() {
   };
 
   const processPlanillaPayment = () => {
-    if (paymentMode === "cuenta" && selectedAccountId === "new") {
+    const isLocalMode = paymentMode === "cuenta-local";
+    const isInternationalMode = paymentMode === "cuenta-internacional";
+    const accountMode = isLocalMode || isInternationalMode;
+    const newAccountValue = isLocalMode ? "new-local" : "new-international";
+
+    if (accountMode && selectedAccountId === newAccountValue) {
       if (!quickAlias.trim() || !quickBank.trim() || !quickNumber.trim()) {
         return;
       }
@@ -211,7 +229,7 @@ export default function SecuritySocialPage() {
         bank: quickBank.trim(),
         accountType: "Ahorros",
         accountNumber: quickNumber.trim(),
-        country: "Colombia",
+        country: isLocalMode ? "Colombia" : "Estados Unidos",
         isPrimary: false,
       };
 
@@ -221,7 +239,7 @@ export default function SecuritySocialPage() {
       setSelectedAccountId(newAccount.id);
     }
 
-    if (paymentMode === "cuenta" && !selectedAccountId) {
+    if (accountMode && !selectedAccountId) {
       return;
     }
 
@@ -230,17 +248,24 @@ export default function SecuritySocialPage() {
     }
 
     const methodLabel =
-      paymentMode === "cuenta"
-        ? "Pagar con cuenta registrada"
-        : paymentMode === "pse"
-          ? "Pagar con llave PSE"
-          : "Pagar con Presta-Pila ACH";
+      paymentMode === "cuenta-local"
+        ? "Cuenta local"
+        : paymentMode === "cuenta-internacional"
+          ? "Cuenta internacional"
+          : "Pagar con llave PSE";
+
+    const paymentMethod =
+      paymentMode === "cuenta-local"
+        ? "cuenta-local"
+        : paymentMode === "cuenta-internacional"
+          ? "cuenta-internacional"
+          : "pse";
 
     const paymentRecord: PlanillaPaymentRecord = {
       id: `PL-${Math.floor(Math.random() * 900 + 1000)}`,
       date: new Date().toISOString().slice(0, 10),
       period,
-      paymentMethod: paymentMode,
+      paymentMethod,
       paymentMethodLabel: methodLabel,
       total: Math.round(totalPila),
       health: Math.round(health),
@@ -253,10 +278,6 @@ export default function SecuritySocialPage() {
     setPlanillaPayments(nextPayments);
     localStorage.setItem(PLANILLA_PAYMENTS_STORAGE_KEY, JSON.stringify(nextPayments));
 
-    if (paymentMode === "presta") {
-      registerPrestaPilaUse();
-    }
-
     setEvents((prev) => [
       {
         id: `N-${Math.floor(Math.random() * 900 + 1000)}`,
@@ -268,11 +289,48 @@ export default function SecuritySocialPage() {
     ]);
 
     setShowPaymentModal(false);
-    setPaymentMode("cuenta");
+    setPaymentMode("cuenta-local");
     setPseKey("");
     setQuickAlias("");
     setQuickBank("");
     setQuickNumber("");
+  };
+
+  const payUsingPrestaPila = () => {
+    if (!prestaPilaStudy.approved) {
+      return;
+    }
+
+    registerPrestaPilaUse();
+
+    const paymentRecord: PlanillaPaymentRecord = {
+      id: `PL-${Math.floor(Math.random() * 900 + 1000)}`,
+      date: new Date().toISOString().slice(0, 10),
+      period,
+      paymentMethod: "presta",
+      paymentMethodLabel: "Pagar con Presta-Pila ACH",
+      total: Math.round(totalPila),
+      health: Math.round(health),
+      pension: Math.round(pension),
+      arl: Math.round(arl),
+      solidarity: Math.round(solidarity),
+    };
+
+    const nextPayments = [paymentRecord, ...planillaPayments];
+    setPlanillaPayments(nextPayments);
+    localStorage.setItem(PLANILLA_PAYMENTS_STORAGE_KEY, JSON.stringify(nextPayments));
+
+    setEvents((prev) => [
+      {
+        id: `N-${Math.floor(Math.random() * 900 + 1000)}`,
+        date: new Date().toISOString().slice(0, 10),
+        noveltyType: `Planilla independiente ${period} pagada con Presta-PILA`,
+        status: "Procesada",
+      },
+      ...prev,
+    ]);
+
+    setShowPaymentModal(false);
   };
 
   return (
@@ -465,10 +523,28 @@ export default function SecuritySocialPage() {
                     <input
                       type="radio"
                       name="payment-mode"
-                      checked={paymentMode === "cuenta"}
-                      onChange={() => setPaymentMode("cuenta")}
+                      checked={paymentMode === "cuenta-local"}
+                      onChange={() => {
+                        setPaymentMode("cuenta-local");
+                        const account =
+                          localAccounts.find((item) => item.isPrimary) ?? localAccounts[0];
+                        setSelectedAccountId(account?.id ?? "new-local");
+                      }}
                     />
-                    Pagar con cuenta registrada
+                    Cuenta local
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="payment-mode"
+                      checked={paymentMode === "cuenta-internacional"}
+                      onChange={() => {
+                        setPaymentMode("cuenta-internacional");
+                        const account = internationalAccounts[0];
+                        setSelectedAccountId(account?.id ?? "new-international");
+                      }}
+                    />
+                    Cuenta internacional
                   </label>
                   <label className="flex items-center gap-2">
                     <input
@@ -479,18 +555,9 @@ export default function SecuritySocialPage() {
                     />
                     Pagar con llave PSE
                   </label>
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      name="payment-mode"
-                      checked={paymentMode === "presta"}
-                      onChange={() => setPaymentMode("presta")}
-                    />
-                    Pagar con Presta-Pila ACH
-                  </label>
                 </div>
 
-                {paymentMode === "cuenta" ? (
+                {paymentMode === "cuenta-local" || paymentMode === "cuenta-internacional" ? (
                   <>
                     <label className="block text-sm">
                       Cuenta de pago
@@ -499,16 +566,18 @@ export default function SecuritySocialPage() {
                         value={selectedAccountId}
                         onChange={(event) => setSelectedAccountId(event.target.value)}
                       >
-                        {accounts.map((account) => (
+                        {(paymentMode === "cuenta-local" ? localAccounts : internationalAccounts).map((account) => (
                           <option key={account.id} value={account.id}>
                             {account.alias} - {account.bank}
                           </option>
                         ))}
-                        <option value="new">Agregar nueva cuenta (abreviado)</option>
+                        <option value={paymentMode === "cuenta-local" ? "new-local" : "new-international"}>
+                          Agregar nueva cuenta (abreviado)
+                        </option>
                       </select>
                     </label>
 
-                    {selectedAccountId === "new" ? (
+                    {selectedAccountId === (paymentMode === "cuenta-local" ? "new-local" : "new-international") ? (
                       <div className="grid gap-2 rounded-md border border-border/80 bg-muted/30 p-2">
                         <input
                           className="h-9 rounded border border-input bg-white px-2 text-sm"
@@ -569,9 +638,8 @@ export default function SecuritySocialPage() {
 
                 <Button
                   className="w-full"
-                  onClick={() => {
-                    setPaymentMode("presta");
-                  }}
+                  onClick={payUsingPrestaPila}
+                  disabled={!prestaPilaStudy.approved}
                 >
                   Pagar usando credito Presta-PILA
                 </Button>
