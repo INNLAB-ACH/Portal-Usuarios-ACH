@@ -2,6 +2,7 @@
 
 import { FormEvent, useMemo, useState } from "react";
 import Image from "next/image";
+import jsPDF from "jspdf";
 import { Button } from "@/components/ui/button";
 import { socialSecurityEvents, socialSecurityInfo } from "@/data/mock-data";
 import { BankAccount } from "@/types/portal";
@@ -15,8 +16,24 @@ type PrestaPilaRecord = {
   status: "Aprobado" | "Rechazado";
 };
 
+type PlanillaPaymentRecord = {
+  id: string;
+  date: string;
+  period: string;
+  paymentMethod: "cuenta" | "pse" | "presta";
+  paymentMethodLabel: string;
+  total: number;
+  health: number;
+  pension: number;
+  arl: number;
+  solidarity: number;
+};
+
+type PaymentMode = "cuenta" | "pse" | "presta";
+
 const ACCOUNTS_STORAGE_KEY = "ach-accounts-list";
 const PRESTA_PILA_STORAGE_KEY = "ach-presta-pila-history";
+const PLANILLA_PAYMENTS_STORAGE_KEY = "ach-planilla-payments";
 
 const periods = [
   "2026-04",
@@ -25,6 +42,15 @@ const periods = [
   "2026-01",
   "2025-12",
   "2025-11",
+];
+
+const noveltyOptions = [
+  "Ingreso",
+  "Retiro",
+  "Cambio salarial",
+  "Incapacidad",
+  "Licencia no remunerada",
+  "Vacaciones",
 ];
 
 const fallbackAccounts: BankAccount[] = [
@@ -41,11 +67,14 @@ const fallbackAccounts: BankAccount[] = [
 
 export default function SecuritySocialPage() {
   const [events, setEvents] = useState(socialSecurityEvents);
-  const [novelty, setNovelty] = useState("");
+  const [noveltyType, setNoveltyType] = useState(noveltyOptions[0]);
+  const [noveltyDescriptor, setNoveltyDescriptor] = useState("");
   const [period, setPeriod] = useState(periods[0]);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [salary, setSalary] = useState("2000000");
+  const [paymentMode, setPaymentMode] = useState<PaymentMode>("cuenta");
   const [selectedAccountId, setSelectedAccountId] = useState("");
+  const [pseKey, setPseKey] = useState("");
   const [quickAlias, setQuickAlias] = useState("");
   const [quickBank, setQuickBank] = useState("");
   const [quickNumber, setQuickNumber] = useState("");
@@ -64,6 +93,14 @@ export default function SecuritySocialPage() {
 
     const raw = localStorage.getItem(PRESTA_PILA_STORAGE_KEY);
     return raw ? (JSON.parse(raw) as PrestaPilaRecord[]) : [];
+  });
+  const [planillaPayments, setPlanillaPayments] = useState<PlanillaPaymentRecord[]>(() => {
+    if (typeof window === "undefined") {
+      return [];
+    }
+
+    const raw = localStorage.getItem(PLANILLA_PAYMENTS_STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as PlanillaPaymentRecord[]) : [];
   });
 
   const salaryValue = Number(salary || "0");
@@ -89,26 +126,32 @@ export default function SecuritySocialPage() {
 
   const submitNovelty = (event: FormEvent) => {
     event.preventDefault();
-    if (!novelty.trim()) {
+    if (!noveltyType.trim()) {
       return;
     }
+
+    const noveltyLabel = noveltyDescriptor.trim()
+      ? `${noveltyType} - ${noveltyDescriptor.trim()}`
+      : noveltyType;
 
     setEvents((prev) => [
       {
         id: `N-${Math.floor(Math.random() * 900 + 1000)}`,
         date: new Date().toISOString().slice(0, 10),
-        noveltyType: novelty,
+        noveltyType: noveltyLabel,
         status: "Reportada",
       },
       ...prev,
     ]);
 
-    setNovelty("");
+    setNoveltyDescriptor("");
   };
 
   const openPlanillaModal = () => {
     const primary = accounts.find((account) => account.isPrimary) ?? accounts[0];
     setSelectedAccountId(primary?.id ?? "");
+    setPaymentMode("cuenta");
+    setPseKey("");
     setShowPaymentModal(true);
   };
 
@@ -126,8 +169,38 @@ export default function SecuritySocialPage() {
     localStorage.setItem(PRESTA_PILA_STORAGE_KEY, JSON.stringify(next));
   };
 
+  const downloadPlanillaReceipt = (record: PlanillaPaymentRecord) => {
+    const doc = new jsPDF();
+    doc.setFontSize(16);
+    doc.text("Comprobante de Pago PILA", 14, 18);
+    doc.setFontSize(11);
+    doc.text(`ID: ${record.id}`, 14, 30);
+    doc.text(`Fecha: ${record.date}`, 14, 38);
+    doc.text(`Periodo: ${record.period}`, 14, 46);
+    doc.text(`Modalidad: ${record.paymentMethodLabel}`, 14, 54);
+    doc.text(`Salud: ${formatCurrency(record.health)}`, 14, 68);
+    doc.text(`Pension: ${formatCurrency(record.pension)}`, 14, 76);
+    doc.text(`ARL: ${formatCurrency(record.arl)}`, 14, 84);
+    doc.text(`Solidaridad: ${formatCurrency(record.solidarity)}`, 14, 92);
+    doc.setFontSize(13);
+    doc.text(`Total pagado: ${formatCurrency(record.total)}`, 14, 106);
+    doc.save(`comprobante-planilla-${record.id}.pdf`);
+  };
+
+  const downloadNoveltySupport = (eventItem: (typeof events)[number]) => {
+    const doc = new jsPDF();
+    doc.setFontSize(15);
+    doc.text("Soporte de novedad", 14, 18);
+    doc.setFontSize(11);
+    doc.text(`ID: ${eventItem.id}`, 14, 30);
+    doc.text(`Fecha: ${eventItem.date}`, 14, 38);
+    doc.text(`Novedad: ${eventItem.noveltyType}`, 14, 46);
+    doc.text(`Estado: ${eventItem.status}`, 14, 54);
+    doc.save(`soporte-novedad-${eventItem.id}.pdf`);
+  };
+
   const processPlanillaPayment = () => {
-    if (selectedAccountId === "new") {
+    if (paymentMode === "cuenta" && selectedAccountId === "new") {
       if (!quickAlias.trim() || !quickBank.trim() || !quickNumber.trim()) {
         return;
       }
@@ -148,6 +221,42 @@ export default function SecuritySocialPage() {
       setSelectedAccountId(newAccount.id);
     }
 
+    if (paymentMode === "cuenta" && !selectedAccountId) {
+      return;
+    }
+
+    if (paymentMode === "pse" && !pseKey.trim()) {
+      return;
+    }
+
+    const methodLabel =
+      paymentMode === "cuenta"
+        ? "Pagar con cuenta registrada"
+        : paymentMode === "pse"
+          ? "Pagar con llave PSE"
+          : "Pagar con Presta-Pila ACH";
+
+    const paymentRecord: PlanillaPaymentRecord = {
+      id: `PL-${Math.floor(Math.random() * 900 + 1000)}`,
+      date: new Date().toISOString().slice(0, 10),
+      period,
+      paymentMethod: paymentMode,
+      paymentMethodLabel: methodLabel,
+      total: Math.round(totalPila),
+      health: Math.round(health),
+      pension: Math.round(pension),
+      arl: Math.round(arl),
+      solidarity: Math.round(solidarity),
+    };
+
+    const nextPayments = [paymentRecord, ...planillaPayments];
+    setPlanillaPayments(nextPayments);
+    localStorage.setItem(PLANILLA_PAYMENTS_STORAGE_KEY, JSON.stringify(nextPayments));
+
+    if (paymentMode === "presta") {
+      registerPrestaPilaUse();
+    }
+
     setEvents((prev) => [
       {
         id: `N-${Math.floor(Math.random() * 900 + 1000)}`,
@@ -159,6 +268,8 @@ export default function SecuritySocialPage() {
     ]);
 
     setShowPaymentModal(false);
+    setPaymentMode("cuenta");
+    setPseKey("");
     setQuickAlias("");
     setQuickBank("");
     setQuickNumber("");
@@ -198,6 +309,48 @@ export default function SecuritySocialPage() {
           <Button onClick={openPlanillaModal}>Generar planilla de pago</Button>
         </article>
 
+        <article className="glass-card overflow-hidden">
+          <div className="border-b border-border/80 px-4 py-3">
+            <h2 className="font-semibold">Planillas pagadas</h2>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-sm">
+              <thead>
+                <tr className="bg-muted/45 text-left text-xs uppercase tracking-wide text-muted-foreground">
+                  <th className="px-4 py-3">Fecha</th>
+                  <th className="px-4 py-3">Periodo</th>
+                  <th className="px-4 py-3">Modalidad</th>
+                  <th className="px-4 py-3 text-right">Total</th>
+                  <th className="px-4 py-3">Comprobante</th>
+                </tr>
+              </thead>
+              <tbody>
+                {planillaPayments.length > 0 ? (
+                  planillaPayments.map((record) => (
+                    <tr key={record.id} className="border-t border-border/70">
+                      <td className="px-4 py-3">{record.date}</td>
+                      <td className="px-4 py-3">{record.period}</td>
+                      <td className="px-4 py-3">{record.paymentMethodLabel}</td>
+                      <td className="px-4 py-3 text-right font-semibold text-primary">{formatCurrency(record.total)}</td>
+                      <td className="px-4 py-3">
+                        <Button size="sm" variant="outline" onClick={() => downloadPlanillaReceipt(record)}>
+                          Descargar PDF
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={5} className="px-4 py-8 text-center text-sm text-muted-foreground">
+                      Aun no hay planillas pagadas.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </article>
+
         <article className="glass-card space-y-3 p-4">
           <h2 className="text-lg font-semibold text-primary">Registro de uso Presta-PILA</h2>
           {prestaPilaHistory.length > 0 ? (
@@ -221,11 +374,22 @@ export default function SecuritySocialPage() {
         <article className="glass-card space-y-3 p-4">
           <h2 className="text-lg font-semibold text-primary">Reportar novedad individual</h2>
           <form className="flex gap-2" onSubmit={submitNovelty}>
+            <select
+              className="h-10 w-56 rounded-md border border-input px-3 text-sm"
+              value={noveltyType}
+              onChange={(event) => setNoveltyType(event.target.value)}
+            >
+              {noveltyOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
             <input
-              value={novelty}
-              onChange={(event) => setNovelty(event.target.value)}
+              value={noveltyDescriptor}
+              onChange={(event) => setNoveltyDescriptor(event.target.value)}
               className="h-10 flex-1 rounded-md border border-input px-3 text-sm"
-              placeholder="Ej: incapacidad, ingreso, retiro"
+              placeholder="Descriptor opcional"
             />
             <Button type="submit">Agregar</Button>
           </form>
@@ -242,6 +406,7 @@ export default function SecuritySocialPage() {
                   <th className="px-4 py-3">Fecha</th>
                   <th className="px-4 py-3">Tipo</th>
                   <th className="px-4 py-3">Estado</th>
+                  <th className="px-4 py-3">Soporte</th>
                 </tr>
               </thead>
               <tbody>
@@ -250,6 +415,11 @@ export default function SecuritySocialPage() {
                     <td className="px-4 py-3">{event.date}</td>
                     <td className="px-4 py-3">{event.noveltyType}</td>
                     <td className="px-4 py-3">{event.status}</td>
+                    <td className="px-4 py-3">
+                      <Button size="sm" variant="outline" onClick={() => downloadNoveltySupport(event)}>
+                        Descargar soporte
+                      </Button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -289,47 +459,98 @@ export default function SecuritySocialPage() {
                   <p className="flex justify-between border-t border-border pt-2 text-base"><span>Total PILA</span><strong className="text-primary">{formatCurrency(totalPila)}</strong></p>
                 </div>
 
-                <label className="block text-sm">
-                  Cuenta de pago
-                  <select
-                    className="mt-1 h-10 w-full rounded-md border border-input bg-white px-3"
-                    value={selectedAccountId}
-                    onChange={(event) => setSelectedAccountId(event.target.value)}
-                  >
-                    {accounts.map((account) => (
-                      <option key={account.id} value={account.id}>
-                        {account.alias} - {account.bank}
-                      </option>
-                    ))}
-                    <option value="new">Agregar nueva cuenta (abreviado)</option>
-                  </select>
-                </label>
+                <div className="space-y-2 rounded-md border border-border/80 bg-muted/30 p-3 text-sm">
+                  <p className="font-medium">Modalidad de pago</p>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="payment-mode"
+                      checked={paymentMode === "cuenta"}
+                      onChange={() => setPaymentMode("cuenta")}
+                    />
+                    Pagar con cuenta registrada
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="payment-mode"
+                      checked={paymentMode === "pse"}
+                      onChange={() => setPaymentMode("pse")}
+                    />
+                    Pagar con llave PSE
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="payment-mode"
+                      checked={paymentMode === "presta"}
+                      onChange={() => setPaymentMode("presta")}
+                    />
+                    Pagar con Presta-Pila ACH
+                  </label>
+                </div>
 
-                {selectedAccountId === "new" ? (
-                  <div className="grid gap-2 rounded-md border border-border/80 bg-muted/30 p-2">
-                    <input
-                      className="h-9 rounded border border-input bg-white px-2 text-sm"
-                      placeholder="Alias"
-                      value={quickAlias}
-                      onChange={(event) => setQuickAlias(event.target.value)}
-                    />
-                    <input
-                      className="h-9 rounded border border-input bg-white px-2 text-sm"
-                      placeholder="Banco"
-                      value={quickBank}
-                      onChange={(event) => setQuickBank(event.target.value)}
-                    />
-                    <input
-                      className="h-9 rounded border border-input bg-white px-2 text-sm"
-                      placeholder="Numero"
-                      value={quickNumber}
-                      onChange={(event) => setQuickNumber(event.target.value)}
-                    />
-                  </div>
+                {paymentMode === "cuenta" ? (
+                  <>
+                    <label className="block text-sm">
+                      Cuenta de pago
+                      <select
+                        className="mt-1 h-10 w-full rounded-md border border-input bg-white px-3"
+                        value={selectedAccountId}
+                        onChange={(event) => setSelectedAccountId(event.target.value)}
+                      >
+                        {accounts.map((account) => (
+                          <option key={account.id} value={account.id}>
+                            {account.alias} - {account.bank}
+                          </option>
+                        ))}
+                        <option value="new">Agregar nueva cuenta (abreviado)</option>
+                      </select>
+                    </label>
+
+                    {selectedAccountId === "new" ? (
+                      <div className="grid gap-2 rounded-md border border-border/80 bg-muted/30 p-2">
+                        <input
+                          className="h-9 rounded border border-input bg-white px-2 text-sm"
+                          placeholder="Alias"
+                          value={quickAlias}
+                          onChange={(event) => setQuickAlias(event.target.value)}
+                        />
+                        <input
+                          className="h-9 rounded border border-input bg-white px-2 text-sm"
+                          placeholder="Banco"
+                          value={quickBank}
+                          onChange={(event) => setQuickBank(event.target.value)}
+                        />
+                        <input
+                          className="h-9 rounded border border-input bg-white px-2 text-sm"
+                          placeholder="Numero"
+                          value={quickNumber}
+                          onChange={(event) => setQuickNumber(event.target.value)}
+                        />
+                      </div>
+                    ) : null}
+                  </>
                 ) : null}
+
+                {paymentMode === "pse" ? (
+                  <label className="block text-sm">
+                    Llave PSE
+                    <input
+                      className="mt-1 h-10 w-full rounded-md border border-input bg-white px-3"
+                      placeholder="Ej: 3150000000 o correo"
+                      value={pseKey}
+                      onChange={(event) => setPseKey(event.target.value)}
+                    />
+                  </label>
+                ) : null}
+
+                <Button className="w-full" onClick={processPlanillaPayment}>
+                  Confirmar pago planilla
+                </Button>
               </section>
 
-              <section className="space-y-3 rounded-lg border border-border/80 p-3">
+              <section className="space-y-3 rounded-lg border border-[#ffbb55]/60 bg-[linear-gradient(160deg,#fff7e6_0%,#ffedd0_45%,#ffe4bf_100%)] p-3">
                 <h3 className="font-semibold">Presta-PILA</h3>
                 <p className="text-sm text-muted-foreground">
                   Oferta de credito para financiar el pago de la planilla del periodo {period}.
@@ -346,12 +567,13 @@ export default function SecuritySocialPage() {
                   </p>
                 </div>
 
-                <Button variant="outline" className="w-full" onClick={registerPrestaPilaUse}>
-                  Registrar uso Presta-PILA
-                </Button>
-
-                <Button className="w-full" onClick={processPlanillaPayment}>
-                  Confirmar pago planilla
+                <Button
+                  className="w-full"
+                  onClick={() => {
+                    setPaymentMode("presta");
+                  }}
+                >
+                  Pagar usando credito Presta-PILA
                 </Button>
               </section>
             </div>

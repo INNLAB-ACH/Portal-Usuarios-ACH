@@ -36,9 +36,9 @@ export default function BillsPage() {
   const pageSize = 5;
   const today = "2026-04-21";
 
-  const pendingBills = useMemo(() => {
+  const filteredCurrentBills = useMemo(() => {
     return bills.filter((bill) => {
-      const pendingByDate = bill.dueDate >= today;
+      const byCurrentDate = bill.dueDate >= today;
       const bySearch =
         !search.trim() ||
         bill.service.toLowerCase().includes(search.toLowerCase()) ||
@@ -47,20 +47,30 @@ export default function BillsPage() {
       const byToDate = !dueTo || bill.dueDate <= dueTo;
       const byAmount = !maxAmount || bill.amount <= Number(maxAmount);
       const byAutoPay = !autoPayOnly || autoPay[bill.id]?.enabled;
-      return pendingByDate && bySearch && byFromDate && byToDate && byAmount && byAutoPay;
+      return byCurrentDate && bySearch && byFromDate && byToDate && byAmount && byAutoPay;
     });
   }, [autoPay, autoPayOnly, dueFrom, dueTo, maxAmount, search]);
 
+  const futureBills = useMemo(
+    () => filteredCurrentBills.filter((bill) => bill.kind === "pending"),
+    [filteredCurrentBills],
+  );
+
+  const activeBills = useMemo(
+    () => filteredCurrentBills.filter((bill) => bill.kind === "requested"),
+    [filteredCurrentBills],
+  );
+
   const pastBills = useMemo(() => bills.filter((bill) => bill.dueDate < today), [today]);
 
-  const totalPages = Math.max(1, Math.ceil(pendingBills.length / pageSize));
-  const paginated = pendingBills.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const totalPages = Math.max(1, Math.ceil(activeBills.length / pageSize));
+  const paginatedActive = activeBills.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   useEffect(() => {
     localStorage.setItem(AUTOPAY_KEY, JSON.stringify(autoPay));
   }, [autoPay]);
 
-  const selectedBills = bills.filter((bill) => selected.includes(bill.id));
+  const selectedBills = activeBills.filter((bill) => selected.includes(bill.id));
 
   const toggleSelection = (billId: string) => {
     setSelected((prev) =>
@@ -173,10 +183,10 @@ export default function BillsPage() {
           <div className="flex gap-2">
             <Button
               variant="outline"
-              onClick={() => setSelected(paginated.map((bill) => bill.id))}
-              disabled={paginated.length === 0}
+              onClick={() => setSelected(paginatedActive.map((bill) => bill.id))}
+              disabled={paginatedActive.length === 0}
             >
-              Seleccionar pagina
+              Seleccionar activas
             </Button>
             <Button disabled={selected.length === 0} onClick={() => setOpenWizard(true)}>
               Pagar seleccionadas ({selected.length})
@@ -187,7 +197,60 @@ export default function BillsPage() {
 
       <section className="glass-card overflow-hidden">
         <div className="border-b border-border/80 px-4 py-3">
-          <h2 className="font-semibold">Facturas pendientes de pago</h2>
+          <h2 className="font-semibold">Facturas futuras</h2>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-sm">
+            <thead>
+              <tr className="bg-muted/45 text-left text-xs uppercase tracking-wide text-muted-foreground">
+                <th className="px-4 py-3">Servicio</th>
+                <th className="px-4 py-3">Proveedor</th>
+                <th className="px-4 py-3">Vence</th>
+                <th className="px-4 py-3 text-right">Monto</th>
+                <th className="px-4 py-3">Accion</th>
+              </tr>
+            </thead>
+            <tbody>
+              {futureBills.length > 0 ? (
+                futureBills.map((bill) => {
+                  const config = autoPay[bill.id];
+
+                  return (
+                    <tr key={bill.id} className="border-t border-border/70">
+                      <td className="px-4 py-3">
+                        <p>{bill.service}</p>
+                        <p className="text-xs text-muted-foreground">{bill.id}</p>
+                      </td>
+                      <td className="px-4 py-3">{bill.provider}</td>
+                      <td className="px-4 py-3">{bill.dueDate}</td>
+                      <td className="px-4 py-3 text-right font-semibold text-primary">{formatCurrency(bill.amount)}</td>
+                      <td className="px-4 py-3">
+                        <Button
+                          size="sm"
+                          variant={config?.enabled ? "outline" : "default"}
+                          onClick={() => setAutoPayEnabled(bill.id, !config?.enabled)}
+                        >
+                          {config?.enabled ? "Autopago activo" : "Activar autopago"}
+                        </Button>
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td colSpan={5} className="px-4 py-14 text-center text-sm text-muted-foreground">
+                    No hay facturas futuras para los filtros actuales.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section className="glass-card overflow-hidden">
+        <div className="border-b border-border/80 px-4 py-3">
+          <h2 className="font-semibold">Facturas activas para pago</h2>
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
@@ -197,15 +260,14 @@ export default function BillsPage() {
                 <th className="px-4 py-3">Servicio</th>
                 <th className="px-4 py-3">Proveedor</th>
                 <th className="px-4 py-3">Vence</th>
-                <th className="px-4 py-3">Estado</th>
                 <th className="px-4 py-3 text-right">Monto</th>
                 <th className="px-4 py-3">Autopago</th>
                 <th className="px-4 py-3">Accion</th>
               </tr>
             </thead>
             <tbody>
-              {paginated.length > 0 ? (
-                paginated.map((bill) => {
+              {paginatedActive.length > 0 ? (
+                paginatedActive.map((bill) => {
                   const isSelected = selected.includes(bill.id);
                   const config = autoPay[bill.id];
 
@@ -224,11 +286,6 @@ export default function BillsPage() {
                       </td>
                       <td className="px-4 py-3">{bill.provider}</td>
                       <td className="px-4 py-3">{bill.dueDate}</td>
-                      <td className="px-4 py-3">
-                        <span className={`rounded-full px-2 py-1 text-xs ${bill.kind === "requested" ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}`}>
-                          {bill.kind === "requested" ? "Solicitada" : "Pendiente"}
-                        </span>
-                      </td>
                       <td className="px-4 py-3 text-right font-semibold text-primary">{formatCurrency(bill.amount)}</td>
                       <td className="px-4 py-3">
                         <label className="mb-2 flex items-center gap-2 text-xs">
@@ -279,8 +336,8 @@ export default function BillsPage() {
                 })
               ) : (
                 <tr>
-                  <td colSpan={8} className="px-4 py-14 text-center text-sm text-muted-foreground">
-                    No hay facturas que cumplan los filtros actuales.
+                  <td colSpan={7} className="px-4 py-14 text-center text-sm text-muted-foreground">
+                    No hay facturas activas para pago con los filtros actuales.
                   </td>
                 </tr>
               )}
@@ -289,7 +346,7 @@ export default function BillsPage() {
         </div>
 
         <footer className="flex items-center justify-between border-t border-border/70 px-4 py-3 text-sm">
-          <p className="text-muted-foreground">{pendingBills.length} facturas pendientes</p>
+          <p className="text-muted-foreground">{activeBills.length} facturas activas para pago</p>
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
@@ -359,7 +416,7 @@ export default function BillsPage() {
       <section className="glass-card flex items-start gap-3 p-4 text-sm">
         <Sparkles className="mt-0.5 size-4 text-secondary" />
         <p className="text-muted-foreground">
-          El autopago queda configurado por factura y se guarda en este navegador. El cobro automatico se ejecutaria en el dia definido sobre la cuenta seleccionada.
+          Facturas futuras: solo activacion de autopago. Facturas activas para pago: pago inmediato y configuracion de autopago.
         </p>
       </section>
 
