@@ -1,24 +1,13 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Globe2, Plus, WalletCards } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AccountCountry, AccountType, BankAccount } from "@/types/portal";
 
-type AccountType = "Ahorros" | "Corriente" | "Deposito de bajo monto";
-type AccountCountry = "Colombia" | "Espana" | "Estados Unidos" | "Mexico" | "Otro";
+const ACCOUNTS_STORAGE_KEY = "ach-accounts-list";
 
-type Account = {
-  id: string;
-  alias: string;
-  bank: string;
-  accountType: AccountType;
-  accountNumber: string;
-  country: AccountCountry;
-  customCountry?: string;
-  isPrimary: boolean;
-};
-
-const initialAccounts: Account[] = [
+const initialAccounts: BankAccount[] = [
   {
     id: "AC-001",
     alias: "Principal nomina",
@@ -49,7 +38,14 @@ const initialAccounts: Account[] = [
 ];
 
 export default function AccountsPage() {
-  const [accounts, setAccounts] = useState<Account[]>(initialAccounts);
+  const [accounts, setAccounts] = useState<BankAccount[]>(() => {
+    if (typeof window === "undefined") {
+      return initialAccounts;
+    }
+
+    const raw = localStorage.getItem(ACCOUNTS_STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as BankAccount[]) : initialAccounts;
+  });
   const [alias, setAlias] = useState("");
   const [bank, setBank] = useState("");
   const [type, setType] = useState<AccountType>("Ahorros");
@@ -70,7 +66,7 @@ export default function AccountsPage() {
       return;
     }
 
-    const newAccount: Account = {
+    const newAccount: BankAccount = {
       id: `AC-${Math.floor(Math.random() * 900 + 1000)}`,
       alias: alias.trim(),
       bank: bank.trim(),
@@ -94,6 +90,10 @@ export default function AccountsPage() {
     setCustomCountry("");
     setIsPrimary(false);
   };
+
+  useEffect(() => {
+    localStorage.setItem(ACCOUNTS_STORAGE_KEY, JSON.stringify(accounts));
+  }, [accounts]);
 
   return (
     <div className="space-y-4">
