@@ -35,9 +35,9 @@ export const loans: Loan[] = [
 ];
 
 export const bills: Bill[] = [
-  { id: "B-701", service: "Energia", provider: "Enel", dueDate: "2026-04-25", amount: 214500, kind: "requested" },
-  { id: "B-702", service: "Agua", provider: "Acueducto", dueDate: "2026-04-26", amount: 143200, kind: "requested" },
-  { id: "B-703", service: "Gas", provider: "Vanti", dueDate: "2026-04-27", amount: 88000, kind: "requested" },
+  { id: "B-701", service: "Energia", provider: "Enel", dueDate: "2026-04-10", amount: 214500, kind: "requested" },
+  { id: "B-702", service: "Agua", provider: "Acueducto", dueDate: "2026-04-12", amount: 143200, kind: "requested" },
+  { id: "B-703", service: "Gas", provider: "Vanti", dueDate: "2026-04-18", amount: 88000, kind: "requested" },
   { id: "B-704", service: "Plan Movil", provider: "Movistar", dueDate: "2026-04-29", amount: 96000, kind: "requested" },
   { id: "B-705", service: "Internet", provider: "Claro", dueDate: "2026-05-01", amount: 132000, kind: "requested" },
   { id: "B-706", service: "Energia", provider: "Enel", dueDate: "2026-05-25", amount: 206100, kind: "pending" },

@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CreditCard, HandCoins, House, ReceiptText, Settings, ShieldCheck } from "lucide-react";
+import { CreditCard, HandCoins, House, Landmark, ReceiptText, Settings, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/dashboard", label: "Inicio", icon: House },
+  { href: "/accounts", label: "Cuentas", icon: Landmark },
   { href: "/transactions", label: "Transacciones", icon: CreditCard },
   { href: "/loans", label: "Prestamos", icon: HandCoins },
   { href: "/bills", label: "Facturas", icon: ReceiptText },

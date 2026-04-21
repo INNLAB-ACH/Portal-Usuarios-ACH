@@ -7,6 +7,7 @@ import { useAuth } from "@/components/providers/app-providers";
 
 const titles: Record<string, string> = {
   "/dashboard": "Dashboard financiero",
+  "/accounts": "Cuentas bancarias",
   "/transactions": "Transacciones",
   "/loans": "Prestamos y cupos",
   "/bills": "Facturas por pagar",

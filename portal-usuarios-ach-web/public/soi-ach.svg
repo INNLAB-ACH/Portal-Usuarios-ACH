@@ -1,0 +1,7 @@
+<svg width="180" height="36" viewBox="0 0 180 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0.5" y="0.5" width="179" height="35" rx="8" fill="#F5F7FA" stroke="#E5E7EB"/>
+  <path d="M15 23.5C18.6 23.5 21.5 20.6 21.5 17C21.5 13.4 18.6 10.5 15 10.5C11.4 10.5 8.5 13.4 8.5 17C8.5 20.6 11.4 23.5 15 23.5Z" fill="#003087"/>
+  <path d="M15.2 20.3C17 20.3 18.5 18.8 18.5 17C18.5 15.2 17 13.7 15.2 13.7C13.4 13.7 11.9 15.2 11.9 17C11.9 18.8 13.4 20.3 15.2 20.3Z" fill="#00A8A8"/>
+  <text x="32" y="16" fill="#003087" font-family="Arial, sans-serif" font-size="9" font-weight="700">POWERED BY</text>
+  <text x="32" y="27" fill="#1A1A2E" font-family="Arial, sans-serif" font-size="14" font-weight="700">SOI ACH</text>
+</svg>

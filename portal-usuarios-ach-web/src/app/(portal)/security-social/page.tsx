@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { socialSecurityEvents, socialSecurityInfo } from "@/data/mock-data";
 
@@ -40,6 +41,10 @@ export default function SecuritySocialPage() {
 
         <article className="glass-card space-y-3 p-4">
           <h2 className="text-lg font-semibold text-primary">Generar planilla</h2>
+          <div className="flex items-center justify-between rounded-lg border border-border/80 bg-muted/40 px-3 py-2">
+            <p className="text-xs text-muted-foreground">Powered by SOI ACH</p>
+            <Image src="/soi-ach.svg" alt="Powered by SOI ACH" width={126} height={24} />
+          </div>
           <div className="grid grid-cols-2 gap-2 text-sm">
             <input className="h-10 rounded-md border border-input px-3" placeholder="Periodo (AAAA-MM)" />
             <input className="h-10 rounded-md border border-input px-3" placeholder="Nro empleados" />

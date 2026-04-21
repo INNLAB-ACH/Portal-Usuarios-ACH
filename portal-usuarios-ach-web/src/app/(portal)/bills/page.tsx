@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ChevronLeft, ChevronRight, Search, Sparkles } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download, Search, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PaymentWizard } from "@/components/payment/payment-wizard";
 import { bills } from "@/data/mock-data";
@@ -17,7 +17,6 @@ const AUTOPAY_KEY = "ach-autopay-config";
 
 export default function BillsPage() {
   const [selected, setSelected] = useState<string[]>([]);
-  const [kindFilter, setKindFilter] = useState<"all" | "requested" | "pending">("all");
   const [search, setSearch] = useState("");
   const [dueFrom, setDueFrom] = useState("");
   const [dueTo, setDueTo] = useState("");
@@ -35,10 +34,11 @@ export default function BillsPage() {
   });
 
   const pageSize = 5;
+  const today = "2026-04-21";
 
-  const filtered = useMemo(() => {
+  const pendingBills = useMemo(() => {
     return bills.filter((bill) => {
-      const byType = kindFilter === "all" || bill.kind === kindFilter;
+      const pendingByDate = bill.dueDate >= today;
       const bySearch =
         !search.trim() ||
         bill.service.toLowerCase().includes(search.toLowerCase()) ||
@@ -47,12 +47,14 @@ export default function BillsPage() {
       const byToDate = !dueTo || bill.dueDate <= dueTo;
       const byAmount = !maxAmount || bill.amount <= Number(maxAmount);
       const byAutoPay = !autoPayOnly || autoPay[bill.id]?.enabled;
-      return byType && bySearch && byFromDate && byToDate && byAmount && byAutoPay;
+      return pendingByDate && bySearch && byFromDate && byToDate && byAmount && byAutoPay;
     });
-  }, [autoPay, autoPayOnly, dueFrom, dueTo, kindFilter, maxAmount, search]);
+  }, [autoPay, autoPayOnly, dueFrom, dueTo, maxAmount, search]);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
-  const paginated = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const pastBills = useMemo(() => bills.filter((bill) => bill.dueDate < today), [today]);
+
+  const totalPages = Math.max(1, Math.ceil(pendingBills.length / pageSize));
+  const paginated = pendingBills.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   useEffect(() => {
     localStorage.setItem(AUTOPAY_KEY, JSON.stringify(autoPay));
@@ -67,7 +69,6 @@ export default function BillsPage() {
   };
 
   const clearFilters = () => {
-    setKindFilter("all");
     setSearch("");
     setDueFrom("");
     setDueTo("");
@@ -169,12 +170,6 @@ export default function BillsPage() {
         </div>
 
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div className="flex flex-wrap gap-2">
-            <Button size="sm" variant={kindFilter === "all" ? "default" : "outline"} onClick={() => setKindFilter("all")}>Todas</Button>
-            <Button size="sm" variant={kindFilter === "requested" ? "default" : "outline"} onClick={() => setKindFilter("requested")}>Solicitadas</Button>
-            <Button size="sm" variant={kindFilter === "pending" ? "default" : "outline"} onClick={() => setKindFilter("pending")}>Pendientes</Button>
-          </div>
-
           <div className="flex gap-2">
             <Button
               variant="outline"
@@ -191,6 +186,9 @@ export default function BillsPage() {
       </section>
 
       <section className="glass-card overflow-hidden">
+        <div className="border-b border-border/80 px-4 py-3">
+          <h2 className="font-semibold">Facturas pendientes de pago</h2>
+        </div>
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
             <thead>
@@ -201,6 +199,8 @@ export default function BillsPage() {
                 <th className="px-4 py-3">Vence</th>
                 <th className="px-4 py-3">Estado</th>
                 <th className="px-4 py-3 text-right">Monto</th>
+                <th className="px-4 py-3">Autopago</th>
+                <th className="px-4 py-3">Accion</th>
               </tr>
             </thead>
             <tbody>
@@ -266,12 +266,20 @@ export default function BillsPage() {
                           </div>
                         ) : null}
                       </td>
+                      <td className="px-4 py-3">
+                        <Button size="sm" onClick={() => {
+                          setSelected([bill.id]);
+                          setOpenWizard(true);
+                        }}>
+                          Pagar
+                        </Button>
+                      </td>
                     </tr>
                   );
                 })
               ) : (
                 <tr>
-                  <td colSpan={7} className="px-4 py-14 text-center text-sm text-muted-foreground">
+                  <td colSpan={8} className="px-4 py-14 text-center text-sm text-muted-foreground">
                     No hay facturas que cumplan los filtros actuales.
                   </td>
                 </tr>
@@ -281,7 +289,7 @@ export default function BillsPage() {
         </div>
 
         <footer className="flex items-center justify-between border-t border-border/70 px-4 py-3 text-sm">
-          <p className="text-muted-foreground">{filtered.length} facturas encontradas</p>
+          <p className="text-muted-foreground">{pendingBills.length} facturas pendientes</p>
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
@@ -304,6 +312,48 @@ export default function BillsPage() {
             </Button>
           </div>
         </footer>
+      </section>
+
+      <section className="glass-card overflow-hidden">
+        <div className="border-b border-border/80 px-4 py-3">
+          <h2 className="font-semibold">Facturas pasadas</h2>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-sm">
+            <thead>
+              <tr className="bg-muted/45 text-left text-xs uppercase tracking-wide text-muted-foreground">
+                <th className="px-4 py-3">Servicio</th>
+                <th className="px-4 py-3">Proveedor</th>
+                <th className="px-4 py-3">Fecha</th>
+                <th className="px-4 py-3 text-right">Monto</th>
+                <th className="px-4 py-3">Comprobante</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pastBills.length > 0 ? (
+                pastBills.map((bill) => (
+                  <tr key={bill.id} className="border-t border-border/70">
+                    <td className="px-4 py-3">{bill.service}</td>
+                    <td className="px-4 py-3">{bill.provider}</td>
+                    <td className="px-4 py-3">{bill.dueDate}</td>
+                    <td className="px-4 py-3 text-right font-semibold text-primary">{formatCurrency(bill.amount)}</td>
+                    <td className="px-4 py-3">
+                      <Button size="sm" variant="outline" className="gap-1">
+                        <Download className="size-4" /> Descargar
+                      </Button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={5} className="px-4 py-10 text-center text-sm text-muted-foreground">
+                    No hay facturas pasadas registradas.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <section className="glass-card flex items-start gap-3 p-4 text-sm">
