@@ -22,7 +22,13 @@ type SidebarProps = {
 
 export function Sidebar({ mobileOpen, onNavigate }: SidebarProps) {
   const pathname = usePathname();
-  const activeItem = navItems.find((item) => item.href === pathname);
+  const normalizedPath = pathname.replace(/\/+$/, "") || "/";
+  const activeItem = navItems.find(
+    (item) =>
+      normalizedPath === item.href ||
+      normalizedPath.endsWith(item.href) ||
+      normalizedPath.endsWith(`${item.href}/`),
+  );
 
   return (
     <aside
@@ -39,7 +45,10 @@ export function Sidebar({ mobileOpen, onNavigate }: SidebarProps) {
       <nav className="space-y-1 px-3 pb-4">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const active = pathname === item.href;
+          const active =
+            normalizedPath === item.href ||
+            normalizedPath.endsWith(item.href) ||
+            normalizedPath.endsWith(`${item.href}/`);
 
           return (
             <Link

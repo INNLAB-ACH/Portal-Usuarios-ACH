@@ -15,6 +15,8 @@ const titles: Record<string, { heading: string; sub: string }> = {
   "/settings": { heading: "Configuracion", sub: "Preferencias de la cuenta" },
 };
 
+const sectionEntries = Object.entries(titles);
+
 type TopbarProps = {
   onToggleSidebar: () => void;
 };
@@ -22,6 +24,14 @@ type TopbarProps = {
 export function Topbar({ onToggleSidebar }: TopbarProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const normalizedPath = pathname.replace(/\/+$/, "") || "/";
+  const activeSection =
+    sectionEntries.find(
+      ([route]) =>
+        normalizedPath === route ||
+        normalizedPath.endsWith(route) ||
+        normalizedPath.endsWith(`${route}/`),
+    )?.[1] ?? null;
   const { user, logout } = useAuth();
 
   return (
@@ -32,8 +42,8 @@ export function Topbar({ onToggleSidebar }: TopbarProps) {
             <Menu className="size-4" />
           </Button>
         </div>
-        <h1 className="text-lg font-bold text-primary md:text-2xl">{titles[pathname]?.heading ?? "Portal"}</h1>
-        <p className="text-xs text-muted-foreground md:text-sm">{titles[pathname]?.sub ?? "Monitoreo consolidado de operaciones ACH"}</p>
+        <h1 className="text-lg font-bold text-primary md:text-2xl">{activeSection?.heading ?? "Portal"}</h1>
+        <p className="text-xs text-muted-foreground md:text-sm">{activeSection?.sub ?? "Monitoreo consolidado de operaciones ACH"}</p>
       </div>
 
       <div className="flex items-center gap-2 md:gap-3">
