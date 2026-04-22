@@ -102,7 +102,7 @@ export default function DashboardPage() {
     <div className="space-y-5">
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Monto transado mes" value={formatCurrency(monthlyAmount)} helper="Acumulado abril 2026" icon={<ArrowLeftRight className="size-5" />} />
-        <StatCard label="Deudas proximas" value={formatCurrency(upcomingDebt)} helper="Vencen en los proximos 10 dias" icon={<CalendarClock className="size-5" />} />
+        <StatCard label="Próximos pagos" value={formatCurrency(upcomingDebt)} helper="Vencen en los proximos 10 dias" icon={<CalendarClock className="size-5" />} />
         <StatCard label="Cupo total prestamos" value={formatCurrency(totalLoanQuota)} helper="Tiendas vinculadas" icon={<HandCoins className="size-5" />} />
         <StatCard label="Cupo disponible" value={formatCurrency(availableLoanQuota)} helper="Disponible para compras" icon={<Wallet className="size-5" />} />
       </section>

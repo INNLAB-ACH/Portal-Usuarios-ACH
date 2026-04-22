@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   Building2,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   Download,
@@ -48,11 +49,13 @@ const fallbackAccounts: BankAccount[] = [
 
 export default function BillsPage() {
   const isHydrated = useHydrated();
+  const [kindFilter, setKindFilter] = useState<"Todas" | "Activas" | "Futuras" | "Pasadas">("Todas");
   const [selected, setSelected] = useState<string[]>([]);
   const [search, setSearch] = useState("");
   const [dueFrom, setDueFrom] = useState("");
   const [dueTo, setDueTo] = useState("");
   const [maxAmount, setMaxAmount] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
   const [autoPayOnly, setAutoPayOnly] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [openWizard, setOpenWizard] = useState(false);
@@ -84,6 +87,10 @@ export default function BillsPage() {
   const filteredCurrentBills = useMemo(() => {
     return bills.filter((bill) => {
       const byCurrentDate = bill.dueDate >= today;
+      const byKind =
+        kindFilter === "Todas" ||
+        (kindFilter === "Activas" && bill.kind === "requested") ||
+        (kindFilter === "Futuras" && bill.kind === "pending");
       const bySearch =
         !search.trim() ||
         bill.service.toLowerCase().includes(search.toLowerCase()) ||
@@ -92,9 +99,9 @@ export default function BillsPage() {
       const byToDate = !dueTo || bill.dueDate <= dueTo;
       const byAmount = !maxAmount || bill.amount <= Number(maxAmount);
       const byAutoPay = !autoPayOnly || autoPay[bill.id]?.enabled;
-      return byCurrentDate && bySearch && byFromDate && byToDate && byAmount && byAutoPay;
+      return byCurrentDate && byKind && bySearch && byFromDate && byToDate && byAmount && byAutoPay;
     });
-  }, [autoPay, autoPayOnly, dueFrom, dueTo, maxAmount, search]);
+  }, [autoPay, autoPayOnly, dueFrom, dueTo, kindFilter, maxAmount, search]);
 
   const futureBills = useMemo(
     () => filteredCurrentBills.filter((bill) => bill.kind === "pending"),
@@ -106,7 +113,10 @@ export default function BillsPage() {
     [filteredCurrentBills],
   );
 
-  const pastBills = useMemo(() => bills.filter((bill) => bill.dueDate < today), [today]);
+  const pastBills = useMemo(() => {
+    const base = bills.filter((bill) => bill.dueDate < today);
+    return kindFilter === "Pasadas" || kindFilter === "Todas" ? base : [];
+  }, [kindFilter, today]);
 
   const totalPages = Math.max(1, Math.ceil(activeBills.length / pageSize));
   const paginatedActive = activeBills.slice((currentPage - 1) * pageSize, currentPage * pageSize);
@@ -130,6 +140,7 @@ export default function BillsPage() {
   };
 
   const clearFilters = () => {
+    setKindFilter("Todas");
     setSearch("");
     setDueFrom("");
     setDueTo("");
@@ -214,64 +225,27 @@ export default function BillsPage() {
   return (
     <div className="space-y-4">
       <section className="glass-card space-y-4 p-4">
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          <label className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <input
-              className="h-10 w-full rounded-lg border border-input bg-white pl-9 pr-3 text-sm"
-              placeholder="Buscar servicio o proveedor"
-              value={search}
-              onChange={(event) => {
-                setSearch(event.target.value);
-                setCurrentPage(1);
-              }}
-            />
-          </label>
-          <input
-            type="date"
-            className="h-10 rounded-lg border border-input bg-white px-3 text-sm"
-            value={dueFrom}
-            onChange={(event) => {
-              setDueFrom(event.target.value);
-              setCurrentPage(1);
-            }}
-          />
-          <input
-            type="date"
-            className="h-10 rounded-lg border border-input bg-white px-3 text-sm"
-            value={dueTo}
-            onChange={(event) => {
-              setDueTo(event.target.value);
-              setCurrentPage(1);
-            }}
-          />
-          <input
-            type="number"
-            min={0}
-            className="h-10 rounded-lg border border-input bg-white px-3 text-sm"
-            placeholder="Monto maximo"
-            value={maxAmount}
-            onChange={(event) => {
-              setMaxAmount(event.target.value);
-              setCurrentPage(1);
-            }}
-          />
-          <label className="flex h-10 items-center gap-2 rounded-lg border border-input bg-white px-3 text-sm">
-            <input
-              type="checkbox"
-              checked={autoPayOnly}
-              onChange={(event) => {
-                setAutoPayOnly(event.target.checked);
-                setCurrentPage(1);
-              }}
-            />
-            Solo autopago activo
-          </label>
-          <Button variant="outline" onClick={clearFilters}>Limpiar filtros</Button>
-        </div>
-
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-wrap gap-2">
+            {(["Todas", "Activas", "Futuras", "Pasadas"] as const).map((type) => (
+              <Button
+                key={type}
+                variant={kindFilter === type ? "default" : "outline"}
+                size="sm"
+                onClick={() => {
+                  setKindFilter(type);
+                  setCurrentPage(1);
+                }}
+              >
+                {type}
+              </Button>
+            ))}
+          </div>
+
           <div className="flex gap-2">
+            <Button variant="outline" size="sm" className="gap-1" onClick={() => setShowFilters((prev) => !prev)}>
+              <ChevronDown className={`size-4 transition-transform ${showFilters ? "rotate-180" : ""}`} /> Filtrar
+            </Button>
             <Button
               variant="outline"
               onClick={() => setSelected(paginatedActive.map((bill) => bill.id))}
@@ -284,6 +258,64 @@ export default function BillsPage() {
             </Button>
           </div>
         </div>
+
+        {showFilters ? (
+          <div className="grid gap-3 rounded-lg border border-border/80 bg-muted/25 p-3 md:grid-cols-2 xl:grid-cols-3">
+            <label className="relative">
+              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <input
+                className="h-10 w-full rounded-lg border border-input bg-white pl-9 pr-3 text-sm"
+                placeholder="Buscar servicio o proveedor"
+                value={search}
+                onChange={(event) => {
+                  setSearch(event.target.value);
+                  setCurrentPage(1);
+                }}
+              />
+            </label>
+            <input
+              type="date"
+              className="h-10 rounded-lg border border-input bg-white px-3 text-sm"
+              value={dueFrom}
+              onChange={(event) => {
+                setDueFrom(event.target.value);
+                setCurrentPage(1);
+              }}
+            />
+            <input
+              type="date"
+              className="h-10 rounded-lg border border-input bg-white px-3 text-sm"
+              value={dueTo}
+              onChange={(event) => {
+                setDueTo(event.target.value);
+                setCurrentPage(1);
+              }}
+            />
+            <input
+              type="number"
+              min={0}
+              className="h-10 rounded-lg border border-input bg-white px-3 text-sm"
+              placeholder="Monto maximo"
+              value={maxAmount}
+              onChange={(event) => {
+                setMaxAmount(event.target.value);
+                setCurrentPage(1);
+              }}
+            />
+            <label className="flex h-10 items-center gap-2 rounded-lg border border-input bg-white px-3 text-sm">
+              <input
+                type="checkbox"
+                checked={autoPayOnly}
+                onChange={(event) => {
+                  setAutoPayOnly(event.target.checked);
+                  setCurrentPage(1);
+                }}
+              />
+              Solo autopago activo
+            </label>
+            <Button variant="outline" onClick={clearFilters}>Limpiar filtros</Button>
+          </div>
+        ) : null}
       </section>
 
       <section className="grid gap-4 xl:grid-cols-[1.35fr_0.65fr]">

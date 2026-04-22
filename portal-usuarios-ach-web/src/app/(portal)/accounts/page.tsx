@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import { Globe2, Plus, WalletCards } from "lucide-react";
+import { Globe2, Plus, WalletCards, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AccountCountry, AccountType, BankAccount } from "@/types/portal";
 import { useHydrated } from "@/lib/use-hydrated";
@@ -55,6 +55,7 @@ export default function AccountsPage() {
   const [country, setCountry] = useState<AccountCountry>("Colombia");
   const [customCountry, setCustomCountry] = useState("");
   const [isPrimary, setIsPrimary] = useState(false);
+  const [openAddModal, setOpenAddModal] = useState(false);
 
   const totalInternational = useMemo(
     () => accounts.filter((account) => account.country !== "Colombia").length,
@@ -99,6 +100,7 @@ export default function AccountsPage() {
     setCountry("Colombia");
     setCustomCountry("");
     setIsPrimary(false);
+    setOpenAddModal(false);
   };
 
   return (
@@ -118,13 +120,18 @@ export default function AccountsPage() {
         </article>
       </section>
 
-      <section className="grid gap-4 xl:grid-cols-[1.2fr_1fr]">
+      <section>
         <article className="glass-card overflow-hidden">
           <div className="flex items-center justify-between border-b border-border/80 px-4 py-3">
             <h2 className="font-semibold">Listado de cuentas y bancos</h2>
-            <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 text-xs text-primary">
-              <WalletCards className="size-3.5" /> Gestion activa
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 text-xs text-primary">
+                <WalletCards className="size-3.5" /> Gestion activa
+              </span>
+              <Button size="sm" className="gap-1" onClick={() => setOpenAddModal(true)}>
+                <Plus className="size-4" /> Agregar cuenta
+              </Button>
+            </div>
           </div>
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
@@ -159,82 +166,101 @@ export default function AccountsPage() {
             </table>
           </div>
         </article>
+      </section>
 
-        <form onSubmit={submitAccount} className="glass-card space-y-3 p-4">
-          <h2 className="font-semibold">Agregar cuenta</h2>
+      {openAddModal ? (
+        <div className="fixed inset-0 z-40 grid place-items-center bg-black/35 p-4">
+          <form onSubmit={submitAccount} className="glass-card w-full max-w-lg space-y-3 border border-primary/20 bg-white p-4">
+            <div className="flex items-center justify-between">
+              <h2 className="font-semibold text-primary">Agregar cuenta</h2>
+              <button
+                type="button"
+                className="rounded-md p-1 hover:bg-muted"
+                onClick={() => setOpenAddModal(false)}
+                aria-label="Cerrar"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
 
-          <input
-            className="h-10 w-full rounded-md border border-input px-3 text-sm"
-            placeholder="Alias de la cuenta"
-            value={alias}
-            onChange={(event) => setAlias(event.target.value)}
-          />
-
-          <input
-            className="h-10 w-full rounded-md border border-input px-3 text-sm"
-            placeholder="Banco"
-            value={bank}
-            onChange={(event) => setBank(event.target.value)}
-          />
-
-          <div className="grid grid-cols-2 gap-2">
-            <select
-              className="h-10 rounded-md border border-input px-2 text-sm"
-              value={type}
-              onChange={(event) => setType(event.target.value as AccountType)}
-            >
-              <option>Ahorros</option>
-              <option>Corriente</option>
-              <option>Deposito de bajo monto</option>
-            </select>
-
-            <select
-              className="h-10 rounded-md border border-input px-2 text-sm"
-              value={country}
-              onChange={(event) => setCountry(event.target.value as AccountCountry)}
-            >
-              <option>Colombia</option>
-              <option>Espana</option>
-              <option>Estados Unidos</option>
-              <option>Mexico</option>
-              <option>Otro</option>
-            </select>
-          </div>
-
-          {country === "Otro" ? (
             <input
               className="h-10 w-full rounded-md border border-input px-3 text-sm"
-              placeholder="Especifica el pais"
-              value={customCountry}
-              onChange={(event) => setCustomCountry(event.target.value)}
+              placeholder="Alias de la cuenta"
+              value={alias}
+              onChange={(event) => setAlias(event.target.value)}
             />
-          ) : null}
 
-          <input
-            className="h-10 w-full rounded-md border border-input px-3 text-sm"
-            placeholder="Numero de cuenta"
-            value={number}
-            onChange={(event) => setNumber(event.target.value)}
-          />
-
-          <label className="flex items-center gap-2 text-sm">
             <input
-              type="checkbox"
-              checked={isPrimary}
-              onChange={(event) => setIsPrimary(event.target.checked)}
+              className="h-10 w-full rounded-md border border-input px-3 text-sm"
+              placeholder="Banco"
+              value={bank}
+              onChange={(event) => setBank(event.target.value)}
             />
-            Marcar como cuenta principal
-          </label>
 
-          <Button type="submit" className="w-full gap-2">
-            <Plus className="size-4" /> Guardar cuenta
-          </Button>
+            <div className="grid grid-cols-2 gap-2">
+              <select
+                className="h-10 rounded-md border border-input px-2 text-sm"
+                value={type}
+                onChange={(event) => setType(event.target.value as AccountType)}
+              >
+                <option>Ahorros</option>
+                <option>Corriente</option>
+                <option>Deposito de bajo monto</option>
+              </select>
 
-          <p className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-            <Globe2 className="size-3.5" /> Soporta cuentas en Espana, Estados Unidos, Mexico y otros paises.
-          </p>
-        </form>
-      </section>
+              <select
+                className="h-10 rounded-md border border-input px-2 text-sm"
+                value={country}
+                onChange={(event) => setCountry(event.target.value as AccountCountry)}
+              >
+                <option>Colombia</option>
+                <option>Espana</option>
+                <option>Estados Unidos</option>
+                <option>Mexico</option>
+                <option>Otro</option>
+              </select>
+            </div>
+
+            {country === "Otro" ? (
+              <input
+                className="h-10 w-full rounded-md border border-input px-3 text-sm"
+                placeholder="Especifica el pais"
+                value={customCountry}
+                onChange={(event) => setCustomCountry(event.target.value)}
+              />
+            ) : null}
+
+            <input
+              className="h-10 w-full rounded-md border border-input px-3 text-sm"
+              placeholder="Numero de cuenta"
+              value={number}
+              onChange={(event) => setNumber(event.target.value)}
+            />
+
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={isPrimary}
+                onChange={(event) => setIsPrimary(event.target.checked)}
+              />
+              Marcar como cuenta principal
+            </label>
+
+            <div className="flex justify-end gap-2 pt-1">
+              <Button type="button" variant="outline" onClick={() => setOpenAddModal(false)}>
+                Cancelar
+              </Button>
+              <Button type="submit" className="gap-2">
+                <Plus className="size-4" /> Guardar cuenta
+              </Button>
+            </div>
+
+            <p className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+              <Globe2 className="size-3.5" /> Soporta cuentas en Espana, Estados Unidos, Mexico y otros paises.
+            </p>
+          </form>
+        </div>
+      ) : null}
     </div>
   );
 }

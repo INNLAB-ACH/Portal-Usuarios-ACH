@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import jsPDF from "jspdf";
 import Papa from "papaparse";
-import { ChevronLeft, ChevronRight, Download, FileDown, Search } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, Download, FileDown, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { transactions } from "@/data/mock-data";
 import { Transaction } from "@/types/portal";
@@ -17,6 +17,7 @@ export default function TransactionsPage() {
   const [minAmount, setMinAmount] = useState("");
   const [maxAmount, setMaxAmount] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [showFilters, setShowFilters] = useState(false);
   const pageSize = 5;
 
   const filtered = useMemo(() => {
@@ -76,62 +77,6 @@ export default function TransactionsPage() {
   return (
     <div className="space-y-4">
       <section className="glass-card space-y-4 p-4">
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          <label className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <input
-              className="h-10 w-full rounded-lg border border-input bg-white pl-9 pr-3 text-sm"
-              placeholder="Buscar por ID o descripcion"
-              value={search}
-              onChange={(event) => {
-                setSearch(event.target.value);
-                setCurrentPage(1);
-              }}
-            />
-          </label>
-          <input
-            type="date"
-            className="h-10 rounded-lg border border-input bg-white px-3 text-sm"
-            value={dateFrom}
-            onChange={(event) => {
-              setDateFrom(event.target.value);
-              setCurrentPage(1);
-            }}
-          />
-          <input
-            type="date"
-            className="h-10 rounded-lg border border-input bg-white px-3 text-sm"
-            value={dateTo}
-            onChange={(event) => {
-              setDateTo(event.target.value);
-              setCurrentPage(1);
-            }}
-          />
-          <input
-            type="number"
-            min={0}
-            className="h-10 rounded-lg border border-input bg-white px-3 text-sm"
-            placeholder="Monto minimo"
-            value={minAmount}
-            onChange={(event) => {
-              setMinAmount(event.target.value);
-              setCurrentPage(1);
-            }}
-          />
-          <input
-            type="number"
-            min={0}
-            className="h-10 rounded-lg border border-input bg-white px-3 text-sm"
-            placeholder="Monto maximo"
-            value={maxAmount}
-            onChange={(event) => {
-              setMaxAmount(event.target.value);
-              setCurrentPage(1);
-            }}
-          />
-          <Button variant="outline" onClick={clearFilters}>Limpiar filtros</Button>
-        </div>
-
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="flex flex-wrap gap-2">
             {(["Todas", "Transferencia", "Pago", "Recaudo", "Debito Automatico"] as const).map((type) => (
@@ -149,7 +94,10 @@ export default function TransactionsPage() {
             ))}
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" size="sm" className="gap-1" onClick={() => setShowFilters((prev) => !prev)}>
+              <ChevronDown className={`size-4 transition-transform ${showFilters ? "rotate-180" : ""}`} /> Filtrar
+            </Button>
             <Button variant="outline" size="sm" onClick={exportCsv} className="gap-1">
               <Download className="size-4" /> CSV
             </Button>
@@ -158,6 +106,64 @@ export default function TransactionsPage() {
             </Button>
           </div>
         </div>
+
+        {showFilters ? (
+          <div className="grid gap-3 rounded-lg border border-border/80 bg-muted/25 p-3 md:grid-cols-2 xl:grid-cols-3">
+            <label className="relative">
+              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <input
+                className="h-10 w-full rounded-lg border border-input bg-white pl-9 pr-3 text-sm"
+                placeholder="Buscar por ID o descripcion"
+                value={search}
+                onChange={(event) => {
+                  setSearch(event.target.value);
+                  setCurrentPage(1);
+                }}
+              />
+            </label>
+            <input
+              type="date"
+              className="h-10 rounded-lg border border-input bg-white px-3 text-sm"
+              value={dateFrom}
+              onChange={(event) => {
+                setDateFrom(event.target.value);
+                setCurrentPage(1);
+              }}
+            />
+            <input
+              type="date"
+              className="h-10 rounded-lg border border-input bg-white px-3 text-sm"
+              value={dateTo}
+              onChange={(event) => {
+                setDateTo(event.target.value);
+                setCurrentPage(1);
+              }}
+            />
+            <input
+              type="number"
+              min={0}
+              className="h-10 rounded-lg border border-input bg-white px-3 text-sm"
+              placeholder="Monto minimo"
+              value={minAmount}
+              onChange={(event) => {
+                setMinAmount(event.target.value);
+                setCurrentPage(1);
+              }}
+            />
+            <input
+              type="number"
+              min={0}
+              className="h-10 rounded-lg border border-input bg-white px-3 text-sm"
+              placeholder="Monto maximo"
+              value={maxAmount}
+              onChange={(event) => {
+                setMaxAmount(event.target.value);
+                setCurrentPage(1);
+              }}
+            />
+            <Button variant="outline" onClick={clearFilters}>Limpiar filtros</Button>
+          </div>
+        ) : null}
       </section>
 
       <section className="glass-card overflow-hidden">
