@@ -19,6 +19,35 @@ export default function TransactionsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
   const pageSize = 5;
+  const scheduledAutoPayments = [
+    {
+      id: "AP-201",
+      concept: "Factura Energia - Enel",
+      frequency: "Mensual",
+      debitAccount: "Cuenta principal",
+      nextCharge: "2026-04-28",
+      amount: 214500,
+      status: "Activo",
+    },
+    {
+      id: "AP-202",
+      concept: "Plan Movil - Movistar",
+      frequency: "Mensual",
+      debitAccount: "Cuenta nomina",
+      nextCharge: "2026-05-02",
+      amount: 96000,
+      status: "Activo",
+    },
+    {
+      id: "AP-203",
+      concept: "Cuota credito - Alkosto",
+      frequency: "Quincenal",
+      debitAccount: "Cuenta principal",
+      nextCharge: "2026-04-30",
+      amount: 540000,
+      status: "Pausado",
+    },
+  ] as const;
 
   const filtered = useMemo(() => {
     return transactions.filter((item) => {
@@ -232,6 +261,53 @@ export default function TransactionsPage() {
             </Button>
           </div>
         </footer>
+      </section>
+
+      <section className="glass-card overflow-hidden">
+        <div className="border-b border-border/80 px-4 py-3">
+          <h2 className="font-semibold">Pagos automaticos programados</h2>
+          <p className="text-xs text-muted-foreground">Control de debitos recurrentes configurados</p>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-sm">
+            <thead>
+              <tr className="bg-muted/45 text-left text-xs uppercase tracking-wide text-muted-foreground">
+                <th className="px-4 py-3">ID</th>
+                <th className="px-4 py-3">Concepto</th>
+                <th className="px-4 py-3">Frecuencia</th>
+                <th className="px-4 py-3">Cuenta</th>
+                <th className="px-4 py-3">Proximo cobro</th>
+                <th className="px-4 py-3 text-right">Monto</th>
+                <th className="px-4 py-3">Estado</th>
+                <th className="px-4 py-3">Accion</th>
+              </tr>
+            </thead>
+            <tbody>
+              {scheduledAutoPayments.map((payment) => (
+                <tr key={payment.id} className="border-t border-border/70">
+                  <td className="px-4 py-3 font-medium">{payment.id}</td>
+                  <td className="px-4 py-3">{payment.concept}</td>
+                  <td className="px-4 py-3">{payment.frequency}</td>
+                  <td className="px-4 py-3">{payment.debitAccount}</td>
+                  <td className="px-4 py-3">{payment.nextCharge}</td>
+                  <td className="px-4 py-3 text-right font-semibold text-primary">{formatCurrency(payment.amount)}</td>
+                  <td className="px-4 py-3">
+                    <span className={`rounded-full px-2 py-1 text-xs ${payment.status === "Activo" ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}`}>
+                      {payment.status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="outline">Editar</Button>
+                      <Button size="sm" variant="outline">Cancelar</Button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
     </div>
   );
