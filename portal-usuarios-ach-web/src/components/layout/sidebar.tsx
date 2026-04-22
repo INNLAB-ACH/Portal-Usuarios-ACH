@@ -22,6 +22,7 @@ type SidebarProps = {
 
 export function Sidebar({ mobileOpen, onNavigate }: SidebarProps) {
   const pathname = usePathname();
+  const activeItem = navItems.find((item) => item.href === pathname);
 
   return (
     <aside
@@ -32,7 +33,7 @@ export function Sidebar({ mobileOpen, onNavigate }: SidebarProps) {
     >
       <div className="px-5 pb-5 pt-7">
         <p className="text-xs uppercase tracking-[0.35em] text-cyan-200">ACH Colombia</p>
-        <p className="mt-2 text-xl font-bold">Portal Usuarios</p>
+        <p className="mt-2 text-xl font-bold">{activeItem?.label ?? "Portal Usuarios"}</p>
       </div>
 
       <nav className="space-y-1 px-3 pb-4">
@@ -46,9 +47,9 @@ export function Sidebar({ mobileOpen, onNavigate }: SidebarProps) {
               href={item.href}
               onClick={onNavigate}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition",
+                "relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition",
                 active
-                  ? "bg-sidebar-primary text-sidebar-primary-foreground"
+                  ? "bg-sidebar-primary text-sidebar-primary-foreground before:absolute before:inset-y-1 before:left-0 before:w-[3px] before:rounded-full before:bg-cyan-300"
                   : "text-sidebar-foreground/85 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
               )}
             >

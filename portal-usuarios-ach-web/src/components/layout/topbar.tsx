@@ -5,14 +5,14 @@ import { LogOut, Menu, UserCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/components/providers/app-providers";
 
-const titles: Record<string, string> = {
-  "/dashboard": "Dashboard financiero",
-  "/accounts": "Cuentas bancarias",
-  "/transactions": "Transacciones",
-  "/loans": "Prestamos y cupos",
-  "/bills": "Facturas por pagar",
-  "/security-social": "Seguridad social",
-  "/settings": "Configuracion",
+const titles: Record<string, { heading: string; sub: string }> = {
+  "/dashboard": { heading: "Inicio", sub: "Resumen consolidado de operaciones" },
+  "/accounts": { heading: "Cuentas", sub: "Gestion de cuentas bancarias" },
+  "/transactions": { heading: "Transacciones", sub: "Historial y pagos automaticos" },
+  "/loans": { heading: "Prestamos", sub: "Creditos activos y ofertas" },
+  "/bills": { heading: "Facturas", sub: "Facturas activas, futuras y pasadas" },
+  "/security-social": { heading: "Seguridad Social", sub: "Planilla y afiliaciones" },
+  "/settings": { heading: "Configuracion", sub: "Preferencias de la cuenta" },
 };
 
 type TopbarProps = {
@@ -32,8 +32,8 @@ export function Topbar({ onToggleSidebar }: TopbarProps) {
             <Menu className="size-4" />
           </Button>
         </div>
-        <h1 className="text-lg font-bold text-primary md:text-2xl">{titles[pathname] ?? "Portal"}</h1>
-        <p className="text-xs text-muted-foreground md:text-sm">Monitoreo consolidado de operaciones ACH</p>
+        <h1 className="text-lg font-bold text-primary md:text-2xl">{titles[pathname]?.heading ?? "Portal"}</h1>
+        <p className="text-xs text-muted-foreground md:text-sm">{titles[pathname]?.sub ?? "Monitoreo consolidado de operaciones ACH"}</p>
       </div>
 
       <div className="flex items-center gap-2 md:gap-3">
