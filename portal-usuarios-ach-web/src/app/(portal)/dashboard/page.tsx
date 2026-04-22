@@ -9,6 +9,7 @@ import { PaymentWizard } from "@/components/payment/payment-wizard";
 import { bills, loans, transactions } from "@/data/mock-data";
 import { formatCurrency } from "@/lib/utils";
 import { BankAccount } from "@/types/portal";
+import { useHydrated } from "@/lib/use-hydrated";
 
 type DashboardAutopayConfig = {
   accountId: string;
@@ -32,6 +33,7 @@ const fallbackAccounts: BankAccount[] = [
 ];
 
 export default function DashboardPage() {
+  const isHydrated = useHydrated();
   const [selectedBillId, setSelectedBillId] = useState<string | null>(null);
   const [menuBillId, setMenuBillId] = useState<string | null>(null);
   const [detailBillId, setDetailBillId] = useState<string | null>(null);
@@ -62,6 +64,10 @@ export default function DashboardPage() {
   const selectedBill = bills.find((item) => item.id === selectedBillId);
   const detailBill = pendingPayments.find((item) => item.id === detailBillId) ?? null;
   const autopayBill = pendingPayments.find((item) => item.id === autopayBillId) ?? null;
+
+  if (!isHydrated) {
+    return <div className="flex min-h-[220px] items-center justify-center">Cargando inicio...</div>;
+  }
 
   const openAutopayModal = (billId: string) => {
     const config = autopayConfig[billId];

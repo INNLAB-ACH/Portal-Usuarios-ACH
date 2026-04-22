@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Globe2, Plus, WalletCards } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AccountCountry, AccountType, BankAccount } from "@/types/portal";
+import { useHydrated } from "@/lib/use-hydrated";
 
 const ACCOUNTS_STORAGE_KEY = "ach-accounts-list";
 
@@ -38,6 +39,7 @@ const initialAccounts: BankAccount[] = [
 ];
 
 export default function AccountsPage() {
+  const isHydrated = useHydrated();
   const [accounts, setAccounts] = useState<BankAccount[]>(() => {
     if (typeof window === "undefined") {
       return initialAccounts;
@@ -58,6 +60,14 @@ export default function AccountsPage() {
     () => accounts.filter((account) => account.country !== "Colombia").length,
     [accounts],
   );
+
+  useEffect(() => {
+    localStorage.setItem(ACCOUNTS_STORAGE_KEY, JSON.stringify(accounts));
+  }, [accounts]);
+
+  if (!isHydrated) {
+    return <div className="flex min-h-[220px] items-center justify-center">Cargando cuentas...</div>;
+  }
 
   const submitAccount = (event: FormEvent) => {
     event.preventDefault();
@@ -90,10 +100,6 @@ export default function AccountsPage() {
     setCustomCountry("");
     setIsPrimary(false);
   };
-
-  useEffect(() => {
-    localStorage.setItem(ACCOUNTS_STORAGE_KEY, JSON.stringify(accounts));
-  }, [accounts]);
 
   return (
     <div className="space-y-4">

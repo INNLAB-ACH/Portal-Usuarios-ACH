@@ -21,6 +21,7 @@ import { PaymentWizard } from "@/components/payment/payment-wizard";
 import { bills } from "@/data/mock-data";
 import { formatCurrency } from "@/lib/utils";
 import { BankAccount } from "@/types/portal";
+import { useHydrated } from "@/lib/use-hydrated";
 
 type AutoPayConfig = {
   enabled: boolean;
@@ -46,6 +47,7 @@ const fallbackAccounts: BankAccount[] = [
 ];
 
 export default function BillsPage() {
+  const isHydrated = useHydrated();
   const [selected, setSelected] = useState<string[]>([]);
   const [search, setSearch] = useState("");
   const [dueFrom, setDueFrom] = useState("");
@@ -116,6 +118,10 @@ export default function BillsPage() {
   const selectedBills = activeBills.filter((bill) => selected.includes(bill.id));
   const detailBill = futureBills.find((bill) => bill.id === detailsBillId) ?? null;
   const autopayBill = futureBills.find((bill) => bill.id === autopayBillId) ?? null;
+
+  if (!isHydrated) {
+    return <div className="flex min-h-[220px] items-center justify-center">Cargando facturas...</div>;
+  }
 
   const toggleSelection = (billId: string) => {
     setSelected((prev) =>

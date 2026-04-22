@@ -3,6 +3,7 @@
 import { createContext, useContext, useMemo, useState } from "react";
 import { mockUsers } from "@/data/mock-data";
 import { AuthUser } from "@/types/portal";
+import { useHydrated } from "@/lib/use-hydrated";
 
 type AuthContextValue = {
   user: AuthUser | null;
@@ -17,7 +18,7 @@ const STORAGE_KEY = "ach-portal-user";
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
-  const isHydrated = typeof window !== "undefined";
+  const isHydrated = useHydrated();
 
   const persistedUser = useMemo<AuthUser | null>(() => {
     if (!isHydrated) {

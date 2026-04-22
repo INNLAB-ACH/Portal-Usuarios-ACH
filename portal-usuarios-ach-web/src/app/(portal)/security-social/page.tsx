@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { socialSecurityEvents, socialSecurityInfo } from "@/data/mock-data";
 import { BankAccount } from "@/types/portal";
 import { formatCurrency } from "@/lib/utils";
+import { useHydrated } from "@/lib/use-hydrated";
 
 type PrestaPilaRecord = {
   id: string;
@@ -66,6 +67,7 @@ const fallbackAccounts: BankAccount[] = [
 ];
 
 export default function SecuritySocialPage() {
+  const isHydrated = useHydrated();
   const [events, setEvents] = useState(socialSecurityEvents);
   const [noveltyType, setNoveltyType] = useState(noveltyOptions[0]);
   const [noveltyDescriptor, setNoveltyDescriptor] = useState("");
@@ -133,6 +135,10 @@ export default function SecuritySocialPage() {
     () => accounts.filter((account) => account.country !== "Colombia"),
     [accounts],
   );
+
+  if (!isHydrated) {
+    return <div className="flex min-h-[220px] items-center justify-center">Cargando seguridad social...</div>;
+  }
 
   const submitNovelty = (event: FormEvent) => {
     event.preventDefault();
