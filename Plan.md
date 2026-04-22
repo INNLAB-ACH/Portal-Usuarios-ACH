@@ -25,8 +25,8 @@ Construir un prototipo web componentizado para ACH Colombia con foco en:
 
 ### 2) Modulos funcionales implementados
 1. Inicio (Dashboard):
-- KPIs financieros.
-- Ultimas transacciones.
+- KPIs financieros (incluyendo "Proximos pagos" en lugar de "Deudas proximas").
+- Ultimas transacciones con popup de detalle y descarga de comprobante PDF por transaccion.
 - Bloque de pagos pendientes con accion de pago.
 - Menu por tarjeta (3 puntos) con ver detalle y programar autopago.
 - Popup de detalle y popup de autopago con seleccion de cuenta.
@@ -37,21 +37,30 @@ Construir un prototipo web componentizado para ACH Colombia con foco en:
 - Paises: Colombia, Espana, Estados Unidos, Mexico y otros.
 - Marcacion de cuenta principal.
 - Persistencia de cuentas en localStorage para reutilizacion en otros modulos.
+- Boton "Agregar cuenta" en encabezado del listado abre popup modal (formulario fuera de la vista principal).
 
 3. Transacciones:
-- Tabla con filtros (texto, tipo, fecha, montos).
+- Tabla con filtros colapsables (texto, tipo, fecha, montos) bajo boton "Filtrar".
+- Chips de tipo siempre visibles fuera del panel de filtros.
 - Paginacion.
 - Exportes CSV y PDF.
+- Bloque inferior de pagos automaticos programados con tabla (concepto, frecuencia, cuenta, proximo cobro, monto, estado, acciones editar/cancelar).
 
 4. Prestamos:
-- Tarjetas por prestamo con estados y acciones.
-- Flujo de autorizacion de pago.
+- KPIs de cupo aprobado, usado y disponible.
 - Dashboard analitico con graficos:
 	- Deuda en el tiempo (area chart).
 	- Deuda por tienda (bar chart).
-- Bloque de deuda por categoria movido desde Inicio a Prestamos.
+- Layout 75/25 bajo graficas:
+	- Izquierda (75%): creditos activos por pagar con acciones por credito:
+		- Pagar ahora (abre PaymentWizard).
+		- Programar pago (popup con cuenta de debito y dia de cobro, persistido en estado local).
+		- Ver cupos en tienda.
+	- Derecha (25%): ofertas de credito por tiendas y categorias con cupo preaprobado y tasa de referencia.
 
 5. Facturas:
+- Chips de tipo (Todas, Activas, Futuras, Pasadas) siempre visibles.
+- Filtros avanzados colapsables bajo boton "Filtrar".
 - Facturas activas para pago como bloque principal.
 - Facturas futuras en panel lateral derecho con tarjetas resumidas.
 - Tarjetas futuras con icono de servicio + menu de 3 puntos.
