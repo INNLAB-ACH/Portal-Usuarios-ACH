@@ -13,7 +13,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
 
   useEffect(() => {
     if (isHydrated && !user) {
-      router.replace("/");
+      router.replace("/hub-login");
     }
   }, [isHydrated, router, user]);
 

@@ -7,6 +7,9 @@ import { useAuth } from "@/components/providers/app-providers";
 
 const titles: Record<string, { heading: string; sub: string }> = {
   "/dashboard": { heading: "Inicio", sub: "Resumen consolidado de operaciones" },
+  "/instant-payments": { heading: "Pagos inmediatos", sub: "Seleccion y confirmacion de pagos en tiempo real" },
+  "/ach-atms": { heading: "Cajeros ACH", sub: "Retiros en puntos autorizados" },
+  "/pse-card": { heading: "Tarjeta PSE", sub: "Recarga de saldo en tarjeta virtual" },
   "/accounts": { heading: "Cuentas", sub: "Gestion de cuentas bancarias" },
   "/transactions": { heading: "Transacciones", sub: "Historial y pagos automaticos" },
   "/loans": { heading: "Prestamos", sub: "Creditos activos y ofertas" },
@@ -56,7 +59,7 @@ export function Topbar({ onToggleSidebar }: TopbarProps) {
           className="gap-2"
           onClick={() => {
             logout();
-            router.replace("/");
+            router.replace("/hub-login");
           }}
         >
           <LogOut className="size-4" />

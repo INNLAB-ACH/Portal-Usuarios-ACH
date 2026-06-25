@@ -1,9 +1,14 @@
 import {
   Bill,
+  EcommerceCartItem,
+  ExtraLimitOption,
+  ImmediatePaymentOption,
+  InstantLoanProvider,
   Loan,
   SocialSecurityEvent,
   SocialSecurityInfo,
   Transaction,
+  BankAccount,
 } from "@/types/portal";
 
 export const mockUsers = [
@@ -59,4 +64,129 @@ export const socialSecurityEvents: SocialSecurityEvent[] = [
   { id: "N-902", date: "2026-04-10", noveltyType: "Cambio salarial", status: "Procesada" },
   { id: "N-903", date: "2026-04-03", noveltyType: "Licencia", status: "En Revision" },
   { id: "N-904", date: "2026-03-27", noveltyType: "Retiro", status: "Reportada" },
+];
+
+export const defaultBankAccounts: BankAccount[] = [
+  {
+    id: "AC-001",
+    alias: "Principal nomina",
+    bank: "Bancolombia",
+    accountType: "Ahorros",
+    accountNumber: "*******1289",
+    country: "Colombia",
+    isPrimary: true,
+    balance: 5200000,
+  },
+  {
+    id: "AC-002",
+    alias: "Operaciones ACH",
+    bank: "Davivienda",
+    accountType: "Corriente",
+    accountNumber: "*******7701",
+    country: "Colombia",
+    isPrimary: false,
+    balance: 1450000,
+  },
+  {
+    id: "AC-003",
+    alias: "Cuenta internacional",
+    bank: "BBVA Espana",
+    accountType: "Ahorros",
+    accountNumber: "ES91***********",
+    country: "Espana",
+    isPrimary: false,
+    balance: 860000,
+  },
+];
+
+export const ecommerceCartItems: EcommerceCartItem[] = [
+  {
+    id: "RW-1001",
+    name: "Chrono Active X9",
+    brand: "Aureum",
+    finish: "Negro carbono",
+    amount: 1460000,
+    quantity: 1,
+  },
+  {
+    id: "RW-1002",
+    name: "Pulse Horizon S",
+    brand: "Velaro",
+    finish: "Acero mate",
+    amount: 980000,
+    quantity: 1,
+  },
+  {
+    id: "RW-1003",
+    name: "Urban Dive 42",
+    brand: "Triton",
+    finish: "Azul profundo",
+    amount: 720000,
+    quantity: 1,
+  },
+];
+
+export const immediatePaymentOptions: ImmediatePaymentOption[] = [
+  {
+    id: "pay-from-account",
+    title: "Pagar desde cuenta",
+    description: "Tus bancos preferidos con cuentas disponibles registradas en ACH.",
+  },
+  {
+    id: "approved-extension-limit",
+    title: "Cupo aprobado de extension",
+    description: "Consulta el cupo disponible para financiar tu compra.",
+  },
+  {
+    id: "instant-loan-request",
+    title: "Solicitud de prestamo instantaneo",
+    description: "Solicita un credito rapido para completar el pago.",
+  },
+];
+
+export const yellowBank = {
+  id: "bank-yellow-001",
+  name: "Banco Amarillo Simulado",
+  theme: "#facc15",
+};
+
+export const extraLimitOptions: ExtraLimitOption[] = [
+  {
+    id: "EL-100",
+    name: "Cupo extra flexible",
+    availableLimit: 1500000,
+    fee: 25000,
+    approvalTime: "Aprobacion inmediata",
+  },
+  {
+    id: "EL-200",
+    name: "Cupo extra premium",
+    availableLimit: 3000000,
+    fee: 43000,
+    approvalTime: "Aprobacion en 2 minutos",
+  },
+  {
+    id: "EL-300",
+    name: "Cupo extra compra protegida",
+    availableLimit: 4500000,
+    fee: 58000,
+    approvalTime: "Aprobacion en 5 minutos",
+  },
+];
+
+export const instantLoanProviders: InstantLoanProvider[] = [
+  {
+    id: "LP-001",
+    name: "CrediFlash",
+    maxAmount: 6000000,
+    rateLabel: "Desde 1.6% MV",
+    payoutTime: "Desembolso en 10 minutos",
+  },
+  {
+    id: "LP-002",
+    name: "YaPrestamo",
+    maxAmount: 4800000,
+    rateLabel: "Desde 1.8% MV",
+    payoutTime: "Desembolso en 15 minutos",
+  },
 ];

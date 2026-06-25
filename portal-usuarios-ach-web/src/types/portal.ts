@@ -59,4 +59,55 @@ export type BankAccount = {
   country: AccountCountry;
   customCountry?: string;
   isPrimary: boolean;
+  balance?: number;
+};
+
+export type EcommerceCartItem = {
+  id: string;
+  name: string;
+  brand: string;
+  finish: string;
+  amount: number;
+  quantity: number;
+};
+
+export type ImmediatePaymentOption = {
+  id: "pay-from-account" | "approved-extension-limit" | "instant-loan-request";
+  title: string;
+  description: string;
+};
+
+export type EcommerceFlowContext = {
+  entry: "ecommerce";
+  selectedMethod: "pse-hub";
+  merchantName: string;
+  total: number;
+  cartItems: EcommerceCartItem[];
+  returnPath: "/instant-payments";
+};
+
+export type ImmediatePaymentResult = {
+  reference: string;
+  status: "approved" | "cancelled";
+  processedAt: string;
+  amount: number;
+  merchantName: string;
+  bankName: string;
+  accountAlias: string;
+};
+
+export type ExtraLimitOption = {
+  id: string;
+  name: string;
+  availableLimit: number;
+  fee: number;
+  approvalTime: string;
+};
+
+export type InstantLoanProvider = {
+  id: string;
+  name: string;
+  maxAmount: number;
+  rateLabel: string;
+  payoutTime: string;
 };

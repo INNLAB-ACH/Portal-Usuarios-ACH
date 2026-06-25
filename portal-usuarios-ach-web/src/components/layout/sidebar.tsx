@@ -2,11 +2,24 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CreditCard, HandCoins, House, Landmark, ReceiptText, Settings, ShieldCheck } from "lucide-react";
+import {
+  Banknote,
+  CreditCard,
+  HandCoins,
+  House,
+  Landmark,
+  ReceiptText,
+  Settings,
+  ShieldCheck,
+  Zap,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/dashboard", label: "Inicio", icon: House },
+  { href: "/instant-payments", label: "Pagos inmediatos", icon: Zap },
+  { href: "/ach-atms", label: "Cajeros ACH", icon: Banknote },
+  { href: "/pse-card", label: "Tarjeta PSE", icon: CreditCard },
   { href: "/accounts", label: "Cuentas", icon: Landmark },
   { href: "/transactions", label: "Transacciones", icon: CreditCard },
   { href: "/loans", label: "Prestamos", icon: HandCoins },

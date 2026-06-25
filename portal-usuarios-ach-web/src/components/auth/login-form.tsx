@@ -1,13 +1,16 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/components/providers/app-providers";
+import { readEcommerceFlowContext } from "@/lib/ecommerce-flow";
 
 export function LoginForm() {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { login } = useAuth();
   const [username, setUsername] = useState("demo");
   const [password, setPassword] = useState("1234");
@@ -27,7 +30,17 @@ export function LoginForm() {
       return;
     }
 
-    router.replace("/dashboard");
+    const returnTo = searchParams.get("returnTo");
+    const ecommerceFlow = readEcommerceFlowContext();
+    const fallbackRoute =
+      ecommerceFlow?.entry === "ecommerce"
+        ? ecommerceFlow.returnPath
+        : pathname === "/hub-login"
+          ? "/instant-payments"
+          : "/dashboard";
+    const targetRoute = returnTo?.startsWith("/") ? returnTo : fallbackRoute;
+
+    router.replace(targetRoute);
   };
 
   return (
@@ -36,7 +49,7 @@ export function LoginForm() {
         <div className="hidden bg-[linear-gradient(155deg,#01265e_0%,#003087_45%,#00a8a8_100%)] p-10 text-white md:flex md:flex-col md:justify-between">
           <div>
             <p className="text-xs uppercase tracking-[0.35em] text-cyan-100/90">Portal ACH Colombia</p>
-            <h1 className="mt-6 max-w-md text-4xl font-bold leading-tight">Gestiona pagos, prestamos y transacciones desde un solo canal.</h1>
+            <h1 className="mt-6 max-w-md text-4xl font-bold leading-tight">Gestiona tus pagos y transacciones desde un sólo lugar</h1>
           </div>
           <p className="max-w-sm text-sm text-cyan-100/90">
             Prototipo financiero con panel consolidado de deudas, cupos activos, facturas solicitadas y seguridad social.
