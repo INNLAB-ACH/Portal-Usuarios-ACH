@@ -207,14 +207,14 @@ export const pseGeoRules: PSEGeoRule[] = [
   {
     id: "GEO-001",
     scope: "Ciudad",
-    target: "Bogota",
+    target: "Bogotá",
     action: "Permitir",
     active: true,
     updatedAt: "2026-07-01 08:45",
   },
   {
     id: "GEO-002",
-    scope: "Pais",
+    scope: "País",
     target: "Venezuela",
     action: "Bloquear",
     active: true,

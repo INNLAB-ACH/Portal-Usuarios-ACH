@@ -195,7 +195,7 @@ export default function SecuritySocialPage() {
     doc.setFontSize(11);
     doc.text(`ID: ${record.id}`, 14, 30);
     doc.text(`Fecha: ${record.date}`, 14, 38);
-    doc.text(`Periodo: ${record.period}`, 14, 46);
+    doc.text(`Período: ${record.period}`, 14, 46);
     doc.text(`Modalidad: ${record.paymentMethodLabel}`, 14, 54);
     doc.text(`Salud: ${formatCurrency(record.health)}`, 14, 68);
     doc.text(`Pension: ${formatCurrency(record.pension)}`, 14, 76);
@@ -343,11 +343,11 @@ export default function SecuritySocialPage() {
     <div className="grid gap-4 xl:grid-cols-[0.9fr_1.1fr]">
       <section className="space-y-4">
         <article className="glass-card space-y-3 p-4">
-          <h2 className="text-lg font-semibold text-primary">Informacion afiliaciones</h2>
+          <h2 className="text-lg font-semibold text-primary">Información afiliaciones</h2>
           <p className="text-sm">EPS: <strong>{socialSecurityInfo.eps}</strong></p>
           <p className="text-sm">Fondo de pensiones: <strong>{socialSecurityInfo.pensionFund}</strong></p>
           <p className="text-sm">ARL: <strong>{socialSecurityInfo.arl}</strong></p>
-          <p className="text-sm">Caja de compensacion: <strong>{socialSecurityInfo.compensationFund}</strong></p>
+          <p className="text-sm">Caja de compensación: <strong>{socialSecurityInfo.compensationFund}</strong></p>
         </article>
 
         <article className="glass-card space-y-3 p-4">
@@ -357,7 +357,7 @@ export default function SecuritySocialPage() {
             <Image src="/soi-ach.svg" alt="Powered by SOI ACH" width={126} height={24} />
           </div>
           <div className="text-sm">
-            <label className="mb-2 block text-xs text-muted-foreground">Periodo de liquidacion</label>
+            <label className="mb-2 block text-xs text-muted-foreground">Período de liquidación</label>
             <select
               className="h-10 w-full rounded-md border border-input bg-white px-3"
               value={period}
@@ -382,7 +382,7 @@ export default function SecuritySocialPage() {
               <thead>
                 <tr className="bg-muted/45 text-left text-xs uppercase tracking-wide text-muted-foreground">
                   <th className="px-4 py-3">Fecha</th>
-                  <th className="px-4 py-3">Periodo</th>
+                  <th className="px-4 py-3">Período</th>
                   <th className="px-4 py-3">Modalidad</th>
                   <th className="px-4 py-3 text-right">Total</th>
                   <th className="px-4 py-3">Comprobante</th>
@@ -502,7 +502,7 @@ export default function SecuritySocialPage() {
 
             <div className="grid gap-4 md:grid-cols-[1.05fr_0.95fr]">
               <section className="space-y-3 rounded-lg border border-border/80 p-3">
-                <h3 className="font-semibold">Datos de liquidacion</h3>
+                <h3 className="font-semibold">Datos de liquidación</h3>
                 <label className="block text-sm">
                   Salario base
                   <input

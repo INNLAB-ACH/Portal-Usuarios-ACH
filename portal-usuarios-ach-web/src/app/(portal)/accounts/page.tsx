@@ -224,7 +224,7 @@ export default function AccountsPage() {
             {country === "Otro" ? (
               <input
                 className="h-10 w-full rounded-md border border-input px-3 text-sm"
-                placeholder="Especifica el pais"
+                placeholder="Especifica el país"
                 value={customCountry}
                 onChange={(event) => setCustomCountry(event.target.value)}
               />

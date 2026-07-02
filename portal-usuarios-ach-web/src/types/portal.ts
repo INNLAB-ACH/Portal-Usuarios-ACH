@@ -114,7 +114,7 @@ export type InstantLoanProvider = {
 
 export type PSEGeoRule = {
   id: string;
-  scope: "Ciudad" | "Pais" | "Zona";
+  scope: "Ciudad" | "País" | "Zona";
   target: string;
   action: "Permitir" | "Bloquear";
   active: boolean;

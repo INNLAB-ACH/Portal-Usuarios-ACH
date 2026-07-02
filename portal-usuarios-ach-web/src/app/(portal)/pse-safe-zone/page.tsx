@@ -408,8 +408,8 @@ export default function PSESafeZonePage() {
         <article className="glass-card overflow-hidden">
           <header className="flex items-center justify-between border-b border-border/70 px-4 py-3">
             <div>
-              <h2 className="text-base font-semibold text-primary">Reglas por ubicacion</h2>
-              <p className="text-xs text-muted-foreground">Permitir o bloquear por ciudad, pais o zona.</p>
+              <h2 className="text-base font-semibold text-primary">Reglas por ubicación</h2>
+              <p className="text-xs text-muted-foreground">Permitir o bloquear por ciudad, país o zona.</p>
             </div>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" className="gap-1" onClick={openNewGeo}>
@@ -429,12 +429,12 @@ export default function PSESafeZonePage() {
                   onChange={(event) => setGeoForm((current) => ({ ...current, scope: event.target.value as PSEGeoRule["scope"] }))}
                 >
                   <option value="Ciudad">Ciudad</option>
-                  <option value="Pais">Pais</option>
+                  <option value="País">País</option>
                   <option value="Zona">Zona</option>
                 </select>
               </label>
               <label className="text-xs text-muted-foreground">
-                Accion
+                Acción
                 <select
                   className="mt-1 h-10 w-full rounded-md border border-input bg-white px-3 text-sm"
                   value={geoForm.action}
@@ -487,7 +487,7 @@ export default function PSESafeZonePage() {
                 <tr className="bg-muted/45 text-left text-xs uppercase tracking-wide text-muted-foreground">
                   <th className="px-4 py-3">Alcance</th>
                   <th className="px-4 py-3">Objetivo</th>
-                  <th className="px-4 py-3">Accion</th>
+                  <th className="px-4 py-3">Acción</th>
                   <th className="px-4 py-3">Estado</th>
                   <th className="px-4 py-3 text-right">Editar</th>
                 </tr>
@@ -660,7 +660,7 @@ export default function PSESafeZonePage() {
           <header className="flex items-center justify-between border-b border-border/70 px-4 py-3">
             <div>
               <h2 className="text-base font-semibold text-primary">Ventanas horarias</h2>
-              <p className="text-xs text-muted-foreground">Operacion permitida solo dentro del horario definido.</p>
+              <p className="text-xs text-muted-foreground">Operación permitida solo dentro del horario definido.</p>
             </div>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" className="gap-1" onClick={openNewWindow}>
@@ -708,7 +708,7 @@ export default function PSESafeZonePage() {
                 />
               </label>
               <div className="md:col-span-2">
-                <p className="text-xs text-muted-foreground">Dias habilitados</p>
+                <p className="text-xs text-muted-foreground">Días habilitados</p>
                 <div className="mt-1 grid grid-cols-4 gap-2 sm:grid-cols-7">
                   {daysOfWeek.map((day) => (
                     <label key={day} className="flex items-center gap-1 rounded-md border border-border/70 bg-white px-2 py-1 text-xs">
@@ -779,7 +779,7 @@ export default function PSESafeZonePage() {
                 <p className="mt-2 text-sm text-foreground">
                   {window.startHour} - {window.endHour} ({window.timezone})
                 </p>
-                <p className="mt-1 text-xs text-muted-foreground">Dias: {window.days.join(", ")}</p>
+                <p className="mt-1 text-xs text-muted-foreground">Días: {window.days.join(", ")}</p>
                 <p className="mt-1 text-xs text-muted-foreground">
                   {window.blockOutsideSchedule ? "Bloqueo fuera de horario: activado" : "Bloqueo fuera de horario: desactivado"}
                 </p>
@@ -791,7 +791,7 @@ export default function PSESafeZonePage() {
         <article className="glass-card p-4 md:p-5">
           <div className="mb-4 flex items-center justify-between">
             <div>
-              <h2 className="text-base font-semibold text-primary">Limites operativos</h2>
+              <h2 className="text-base font-semibold text-primary">Límites operativos</h2>
               <p className="text-xs text-muted-foreground">Topes por monto, cantidad y acumulado.</p>
             </div>
             <div className="flex items-center gap-2">
@@ -801,7 +801,7 @@ export default function PSESafeZonePage() {
                 className="gap-1"
                 onClick={toggleLimitEditor}
               >
-                <Pencil className="size-3.5" /> {showLimitForm ? "Cerrar" : "Editar limites"}
+                <Pencil className="size-3.5" /> {showLimitForm ? "Cerrar" : "Editar límites"}
               </Button>
               <ShieldCheck className="size-5 text-primary" />
             </div>
@@ -810,7 +810,7 @@ export default function PSESafeZonePage() {
           {showLimitForm ? (
             <div className="mb-4 grid gap-2 rounded-lg border border-border/80 bg-muted/30 p-3">
               <label className="text-xs text-muted-foreground">
-                Monto maximo por transaccion
+                Monto máximo por transacción
                 <input
                   type="number"
                   min={0}
@@ -825,7 +825,7 @@ export default function PSESafeZonePage() {
                 />
               </label>
               <label className="text-xs text-muted-foreground">
-                Cantidad maxima de transacciones por dia
+                Cantidad máxima de transacciones por día
                 <input
                   type="number"
                   min={0}
@@ -875,7 +875,7 @@ export default function PSESafeZonePage() {
                   checked={limitDraft.active}
                   onChange={(event) => setLimitDraft((current) => ({ ...current, active: event.target.checked }))}
                 />
-                Limites activos
+                Límites activos
               </label>
               <div className="flex justify-end gap-2">
                 <Button
@@ -890,7 +890,7 @@ export default function PSESafeZonePage() {
                   <X className="size-3.5" /> Cancelar
                 </Button>
                 <Button size="sm" className="gap-1" onClick={saveLimits}>
-                  <Save className="size-3.5" /> Guardar limites
+                  <Save className="size-3.5" /> Guardar límites
                 </Button>
               </div>
             </div>
@@ -898,11 +898,11 @@ export default function PSESafeZonePage() {
 
           <div className="space-y-3 text-sm">
             <div className="rounded-lg border border-border/80 bg-white px-3 py-2">
-              <p className="text-xs text-muted-foreground">Monto maximo por transaccion</p>
+              <p className="text-xs text-muted-foreground">Monto máximo por transacción</p>
               <p className="text-base font-semibold text-primary">{formatCurrency(limitPolicy.maxAmountPerTransaction)}</p>
             </div>
             <div className="rounded-lg border border-border/80 bg-white px-3 py-2">
-              <p className="text-xs text-muted-foreground">Cantidad maxima diaria</p>
+              <p className="text-xs text-muted-foreground">Cantidad máxima diaria</p>
               <p className="text-base font-semibold text-primary">{limitPolicy.maxTransactionsPerDay} transacciones</p>
             </div>
             <div className="rounded-lg border border-border/80 bg-white px-3 py-2">
@@ -916,7 +916,7 @@ export default function PSESafeZonePage() {
           </div>
 
           <p className="mt-4 text-xs text-muted-foreground">
-            Ultima actualizacion de limites: {limitPolicy.updatedAt}.
+            Última actualización de límites: {limitPolicy.updatedAt}.
           </p>
         </article>
       </section>
