@@ -5,6 +5,11 @@ import {
   ImmediatePaymentOption,
   InstantLoanProvider,
   Loan,
+  PSEGeoRule,
+  PSELimitPolicy,
+  PSEOperationWindow,
+  PSESafeZoneSummary,
+  PSETrustEntry,
   SocialSecurityEvent,
   SocialSecurityInfo,
   Transaction,
@@ -190,3 +195,103 @@ export const instantLoanProviders: InstantLoanProvider[] = [
     payoutTime: "Desembolso en 15 minutos",
   },
 ];
+
+export const pseSafeZoneSummary: PSESafeZoneSummary = {
+  activeRules: 8,
+  blockedRules: 3,
+  trustedEntities: 5,
+  trustedMerchants: 7,
+};
+
+export const pseGeoRules: PSEGeoRule[] = [
+  {
+    id: "GEO-001",
+    scope: "Ciudad",
+    target: "Bogota",
+    action: "Permitir",
+    active: true,
+    updatedAt: "2026-07-01 08:45",
+  },
+  {
+    id: "GEO-002",
+    scope: "Pais",
+    target: "Venezuela",
+    action: "Bloquear",
+    active: true,
+    updatedAt: "2026-06-28 14:12",
+  },
+  {
+    id: "GEO-003",
+    scope: "Zona",
+    target: "Zona franca norte",
+    action: "Bloquear",
+    active: false,
+    updatedAt: "2026-06-19 10:22",
+  },
+];
+
+export const pseTrustEntries: PSETrustEntry[] = [
+  {
+    id: "TR-001",
+    category: "Entidad",
+    name: "Bancolombia",
+    listType: "Whitelist",
+    notes: "Entidad principal de recaudo",
+    active: true,
+  },
+  {
+    id: "TR-002",
+    category: "Comercio",
+    name: "Mercado Virtual Centro",
+    listType: "Whitelist",
+    active: true,
+  },
+  {
+    id: "TR-003",
+    category: "Comercio",
+    name: "Apuestas Rapidas 24",
+    listType: "Blacklist",
+    notes: "Intentos de cobro atipico",
+    active: true,
+  },
+  {
+    id: "TR-004",
+    category: "Entidad",
+    name: "Entidad no verificada 901",
+    listType: "Blacklist",
+    active: false,
+  },
+];
+
+export const pseOperationWindows: PSEOperationWindow[] = [
+  {
+    id: "TW-001",
+    name: "Horario laboral",
+    startHour: "06:00",
+    endHour: "20:00",
+    days: ["Lun", "Mar", "Mie", "Jue", "Vie"],
+    blockOutsideSchedule: true,
+    timezone: "America/Bogota",
+    active: true,
+  },
+  {
+    id: "TW-002",
+    name: "Fin de semana controlado",
+    startHour: "08:00",
+    endHour: "14:00",
+    days: ["Sab"],
+    blockOutsideSchedule: true,
+    timezone: "America/Bogota",
+    active: false,
+  },
+];
+
+export const pseLimitPolicy: PSELimitPolicy = {
+  id: "LP-001",
+  maxAmountPerTransaction: 2500000,
+  maxTransactionsPerDay: 8,
+  dailyAccumulatedCap: 9000000,
+  weeklyAccumulatedCap: 30000000,
+  active: true,
+  updatedAt: "2026-07-02 09:10",
+};

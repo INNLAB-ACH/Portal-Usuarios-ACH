@@ -10,6 +10,7 @@ import {
   Landmark,
   ReceiptText,
   Settings,
+  Shield,
   ShieldCheck,
   Zap,
 } from "lucide-react";
@@ -25,6 +26,7 @@ const navItems = [
   { href: "/loans", label: "Préstamos", icon: HandCoins },
   { href: "/bills", label: "Facturas", icon: ReceiptText },
   { href: "/security-social", label: "Seguridad social", icon: ShieldCheck },
+  { href: "/pse-safe-zone", label: "Zona segura PSE", icon: Shield },
   { href: "/settings", label: "Configuración", icon: Settings },
 ];
 
@@ -71,7 +73,7 @@ export function Sidebar({ mobileOpen, onNavigate }: SidebarProps) {
               className={cn(
                 "relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition",
                 active
-                  ? "bg-sidebar-primary text-sidebar-primary-foreground before:absolute before:inset-y-1 before:left-0 before:w-[3px] before:rounded-full before:bg-cyan-300"
+                  ? "bg-sidebar-primary text-sidebar-primary-foreground before:absolute before:inset-y-1 before:left-0 before:w-0.75 before:rounded-full before:bg-cyan-300"
                   : "text-sidebar-foreground/85 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
               )}
             >

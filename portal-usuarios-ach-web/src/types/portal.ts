@@ -111,3 +111,49 @@ export type InstantLoanProvider = {
   rateLabel: string;
   payoutTime: string;
 };
+
+export type PSEGeoRule = {
+  id: string;
+  scope: "Ciudad" | "Pais" | "Zona";
+  target: string;
+  action: "Permitir" | "Bloquear";
+  active: boolean;
+  updatedAt: string;
+};
+
+export type PSETrustEntry = {
+  id: string;
+  category: "Entidad" | "Comercio";
+  name: string;
+  listType: "Whitelist" | "Blacklist";
+  notes?: string;
+  active: boolean;
+};
+
+export type PSEOperationWindow = {
+  id: string;
+  name: string;
+  startHour: string;
+  endHour: string;
+  days: string[];
+  blockOutsideSchedule: boolean;
+  timezone: string;
+  active: boolean;
+};
+
+export type PSELimitPolicy = {
+  id: string;
+  maxAmountPerTransaction: number;
+  maxTransactionsPerDay: number;
+  dailyAccumulatedCap: number;
+  weeklyAccumulatedCap: number;
+  active: boolean;
+  updatedAt: string;
+};
+
+export type PSESafeZoneSummary = {
+  activeRules: number;
+  blockedRules: number;
+  trustedEntities: number;
+  trustedMerchants: number;
+};
