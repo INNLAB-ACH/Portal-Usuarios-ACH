@@ -12,6 +12,7 @@ import {
   Settings,
   Shield,
   ShieldCheck,
+  User,
   Zap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -27,6 +28,7 @@ const navItems = [
   { href: "/bills", label: "Facturas", icon: ReceiptText },
   { href: "/security-social", label: "Seguridad social", icon: ShieldCheck },
   { href: "/pse-safe-zone", label: "Zona segura PSE", icon: Shield },
+  { href: "/profile", label: "Perfil", icon: User },
   { href: "/settings", label: "Configuración", icon: Settings },
 ];
 

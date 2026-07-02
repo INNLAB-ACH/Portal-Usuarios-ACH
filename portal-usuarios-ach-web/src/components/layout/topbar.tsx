@@ -16,6 +16,7 @@ const titles: Record<string, { heading: string; sub: string }> = {
   "/bills": { heading: "Facturas", sub: "Facturas activas, futuras y pasadas" },
   "/security-social": { heading: "Seguridad Social", sub: "Planilla y afiliaciones" },
   "/pse-safe-zone": { heading: "Zona segura PSE", sub: "Control de reglas de seguridad para tus pagos PSE" },
+  "/profile": { heading: "Perfil", sub: "Consulta y actualización de datos personales" },
   "/settings": { heading: "Configuración", sub: "Preferencias de la cuenta" },
 };
 
