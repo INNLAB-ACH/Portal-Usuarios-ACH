@@ -7,15 +7,15 @@ import { useAuth } from "@/components/providers/app-providers";
 
 const titles: Record<string, { heading: string; sub: string }> = {
   "/dashboard": { heading: "Inicio", sub: "Resumen consolidado de operaciones" },
-  "/instant-payments": { heading: "Pagos inmediatos", sub: "Seleccion y confirmacion de pagos en tiempo real" },
+  "/instant-payments": { heading: "Pagos inmediatos", sub: "Selección y confirmación de pagos en tiempo real" },
   "/ach-atms": { heading: "Cajeros ACH", sub: "Retiros en puntos autorizados" },
   "/pse-card": { heading: "Tarjeta PSE", sub: "Recarga de saldo en tarjeta virtual" },
-  "/accounts": { heading: "Cuentas", sub: "Gestion de cuentas bancarias" },
-  "/transactions": { heading: "Transacciones", sub: "Historial y pagos automaticos" },
-  "/loans": { heading: "Prestamos", sub: "Creditos activos y ofertas" },
+  "/accounts": { heading: "Cuentas", sub: "Gestión de cuentas bancarias" },
+  "/transactions": { heading: "Transacciones", sub: "Historial y pagos automáticos" },
+  "/loans": { heading: "Préstamos", sub: "Créditos activos y ofertas" },
   "/bills": { heading: "Facturas", sub: "Facturas activas, futuras y pasadas" },
   "/security-social": { heading: "Seguridad Social", sub: "Planilla y afiliaciones" },
-  "/settings": { heading: "Configuracion", sub: "Preferencias de la cuenta" },
+  "/settings": { heading: "Configuración", sub: "Preferencias de la cuenta" },
 };
 
 const sectionEntries = Object.entries(titles);

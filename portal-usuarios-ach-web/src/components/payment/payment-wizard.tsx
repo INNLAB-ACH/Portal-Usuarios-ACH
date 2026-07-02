@@ -32,7 +32,7 @@ export function PaymentWizard({ title, items, onClose }: PaymentWizardProps) {
 
       {step === 1 ? (
         <div className="space-y-3">
-          <p className="text-sm text-muted-foreground">Resumen de items seleccionados para pago/autorizacion.</p>
+          <p className="text-sm text-muted-foreground">Resumen de items seleccionados para pago/autorización.</p>
           <ul className="space-y-2">
             {items.map((item) => (
               <li key={item.id} className="flex items-center justify-between rounded-md border border-border/80 px-3 py-2 text-sm">
@@ -53,7 +53,7 @@ export function PaymentWizard({ title, items, onClose }: PaymentWizardProps) {
 
       {step === 2 ? (
         <div className="space-y-3">
-          <p className="text-sm text-muted-foreground">Confirma la operacion con el codigo OTP simulado (000000).</p>
+          <p className="text-sm text-muted-foreground">Confirma la operación con el código OTP simulado (000000).</p>
           <input
             value={otp}
             onChange={(event) => setOtp(event.target.value)}
@@ -61,7 +61,7 @@ export function PaymentWizard({ title, items, onClose }: PaymentWizardProps) {
             className="h-11 w-full rounded-lg border border-input px-3 text-sm"
           />
           <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => setStep(1)}>Atras</Button>
+            <Button variant="outline" onClick={() => setStep(1)}>Atrás</Button>
             <Button onClick={() => setStep(3)} disabled={otp !== "000000"}>Confirmar</Button>
           </div>
         </div>
@@ -70,7 +70,7 @@ export function PaymentWizard({ title, items, onClose }: PaymentWizardProps) {
       {step === 3 ? (
         <div className="space-y-3 text-center">
           <CheckCircle2 className="mx-auto size-12 text-green-600" />
-          <p className="text-lg font-semibold">Operacion autorizada con exito</p>
+          <p className="text-lg font-semibold">Operación autorizada con éxito</p>
           <p className="text-sm text-muted-foreground">Referencia: {reference}</p>
           <Button onClick={onClose}>Cerrar</Button>
         </div>

@@ -57,7 +57,7 @@ const noveltyOptions = [
 const fallbackAccounts: BankAccount[] = [
   {
     id: "AC-001",
-    alias: "Principal nomina",
+    alias: "Principal nómina",
     bank: "Bancolombia",
     accountType: "Ahorros",
     accountNumber: "*******1289",
@@ -599,7 +599,7 @@ export default function SecuritySocialPage() {
                         />
                         <input
                           className="h-9 rounded border border-input bg-white px-2 text-sm"
-                          placeholder="Numero"
+                          placeholder="Número"
                           value={quickNumber}
                           onChange={(event) => setQuickNumber(event.target.value)}
                         />
@@ -628,7 +628,7 @@ export default function SecuritySocialPage() {
               <section className="space-y-3 rounded-lg border border-[#ffbb55]/60 bg-[linear-gradient(160deg,#fff7e6_0%,#ffedd0_45%,#ffe4bf_100%)] p-3">
                 <h3 className="font-semibold">Presta-PILA</h3>
                 <p className="text-sm text-muted-foreground">
-                  Oferta de credito para financiar el pago de la planilla del periodo {period}.
+                  Oferta de crédito para financiar el pago de la planilla del período {period}.
                 </p>
 
                 <div className="space-y-2 rounded-md border border-border/80 bg-muted/40 p-3 text-sm">
@@ -647,7 +647,7 @@ export default function SecuritySocialPage() {
                   onClick={payUsingPrestaPila}
                   disabled={!prestaPilaStudy.approved}
                 >
-                  Pagar usando credito Presta-PILA
+                  Pagar usando crédito Presta-PILA
                 </Button>
               </section>
             </div>

@@ -14,7 +14,7 @@ export function RecentTransactions() {
   const downloadReceipt = (transaction: Transaction) => {
     const doc = new jsPDF();
     doc.setFontSize(16);
-    doc.text("Comprobante de transaccion", 14, 18);
+    doc.text("Comprobante de transacción", 14, 18);
     doc.setFontSize(11);
     doc.text(`ID: ${transaction.id}`, 14, 32);
     doc.text(`Fecha: ${transaction.date}`, 14, 40);
@@ -30,7 +30,7 @@ export function RecentTransactions() {
     <>
       <section className="glass-card overflow-hidden">
         <div className="border-b border-border/80 px-4 py-3 md:px-5">
-          <h2 className="text-base font-semibold">Ultimas transacciones</h2>
+          <h2 className="text-base font-semibold">Últimas transacciones</h2>
         </div>
 
         <div className="overflow-x-auto">
@@ -41,7 +41,7 @@ export function RecentTransactions() {
                 <th className="px-4 py-3">Detalle</th>
                 <th className="px-4 py-3">Tipo</th>
                 <th className="px-4 py-3 text-right">Monto</th>
-                <th className="px-4 py-3">Accion</th>
+                <th className="px-4 py-3">Acción</th>
               </tr>
             </thead>
             <tbody>
@@ -67,7 +67,7 @@ export function RecentTransactions() {
         <div className="fixed inset-0 z-40 grid place-items-center bg-black/35 p-4">
           <div className="glass-card w-full max-w-md space-y-4 border border-primary/20 bg-white p-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-primary">Detalle de transaccion</h3>
+              <h3 className="text-lg font-semibold text-primary">Detalle de transacción</h3>
               <button
                 type="button"
                 className="rounded-md p-1 hover:bg-muted"

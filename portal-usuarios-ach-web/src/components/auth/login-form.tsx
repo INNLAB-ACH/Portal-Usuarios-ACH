@@ -25,7 +25,7 @@ export function LoginForm() {
     const result = await login(username.trim(), password.trim());
 
     if (!result.ok) {
-      setError(result.message ?? "No fue posible iniciar sesion");
+      setError(result.message ?? "No fue posible iniciar sesión");
       setLoading(false);
       return;
     }
@@ -72,7 +72,7 @@ export function LoginForm() {
           </label>
 
           <label className="space-y-2 text-sm font-medium">
-            Contrasena
+            Contraseña
             <input
               type="password"
               className="h-11 w-full rounded-lg border border-input bg-white px-3 text-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"

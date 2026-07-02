@@ -66,7 +66,7 @@ export default function HomePage() {
 
         <aside className="glass-card h-fit p-5 md:p-6">
           <h2 className="text-lg font-semibold text-primary">Metodo de pago</h2>
-          <p className="mt-1 text-sm text-muted-foreground">Selecciona una opcion para continuar al PSE Hub.</p>
+          <p className="mt-1 text-sm text-muted-foreground">Selecciona una opción para continuar al PSE Hub.</p>
 
           <button
             type="button"
@@ -112,7 +112,7 @@ export default function HomePage() {
 
           <p className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
             <ShieldCheck className="size-3.5" />
-            Flujo de demo seguro con autenticacion HUB antes de confirmar la transaccion.
+            Flujo de demo seguro con autenticación HUB antes de confirmar la transacción.
           </p>
         </aside>
       </section>

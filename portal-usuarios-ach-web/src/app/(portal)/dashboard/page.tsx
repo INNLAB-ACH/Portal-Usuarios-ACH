@@ -23,7 +23,7 @@ const DASHBOARD_AUTOPAY_KEY = "ach-dashboard-autopay";
 const fallbackAccounts: BankAccount[] = [
   {
     id: "AC-001",
-    alias: "Principal nomina",
+    alias: "Principal nómina",
     bank: "Bancolombia",
     accountType: "Ahorros",
     accountNumber: "*******1289",
@@ -102,8 +102,8 @@ export default function DashboardPage() {
     <div className="space-y-5">
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Monto transado mes" value={formatCurrency(monthlyAmount)} helper="Acumulado abril 2026" icon={<ArrowLeftRight className="size-5" />} />
-        <StatCard label="Próximos pagos" value={formatCurrency(upcomingDebt)} helper="Vencen en los proximos 10 dias" icon={<CalendarClock className="size-5" />} />
-        <StatCard label="Cupo total prestamos" value={formatCurrency(totalLoanQuota)} helper="Tiendas vinculadas" icon={<HandCoins className="size-5" />} />
+        <StatCard label="Próximos pagos" value={formatCurrency(upcomingDebt)} helper="Vencen en los próximos 10 días" icon={<CalendarClock className="size-5" />} />
+        <StatCard label="Cupo total préstamos" value={formatCurrency(totalLoanQuota)} helper="Tiendas vinculadas" icon={<HandCoins className="size-5" />} />
         <StatCard label="Cupo disponible" value={formatCurrency(availableLoanQuota)} helper="Disponible para compras" icon={<Wallet className="size-5" />} />
       </section>
 
@@ -238,7 +238,7 @@ export default function DashboardPage() {
             </label>
 
             <label className="block text-sm">
-              Dia de cobro
+              Día de cobro
               <input
                 type="number"
                 min={1}

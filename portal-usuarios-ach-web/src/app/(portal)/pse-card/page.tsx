@@ -61,7 +61,7 @@ export default function PseCardPage() {
     return (
       <div className="fixed inset-0 z-50 grid place-items-center bg-amber-950/30 p-4">
         <section className="w-full max-w-md rounded-2xl border border-amber-500/80 bg-amber-300 px-4 py-5 shadow-xl md:px-5">
-          <p className="text-xs uppercase tracking-[0.25em] text-amber-900/80">Notificacion bancaria</p>
+          <p className="text-xs uppercase tracking-[0.25em] text-amber-900/80">Notificación bancaria</p>
           <h1 className="mt-2 text-xl font-bold text-amber-950">{yellowBank.name}</h1>
           <p className="mt-2 text-sm text-amber-950/90">
             Deseas confirmar la recarga para generar tu tarjeta debito virtual PSE.
@@ -99,10 +99,10 @@ export default function PseCardPage() {
     return (
       <div className="fixed inset-0 z-50 grid place-items-center bg-cyan-950/30 p-4">
         <section className="w-full max-w-md rounded-2xl border border-cyan-500/70 bg-cyan-200 px-4 py-5 shadow-xl md:px-5">
-          <p className="text-xs uppercase tracking-[0.25em] text-cyan-900/80">Confirmacion del servicio</p>
+          <p className="text-xs uppercase tracking-[0.25em] text-cyan-900/80">Confirmación del servicio</p>
           <h1 className="mt-2 text-xl font-bold text-cyan-950">Tarjeta PSE</h1>
           <p className="mt-2 text-sm text-cyan-950/90">
-            El banco aprobo la transaccion. Confirma para emitir y recargar tu tarjeta virtual.
+            El banco aprobó la transacción. Confirma para emitir y recargar tu tarjeta virtual.
           </p>
 
           <div className="mt-4 space-y-2 rounded-xl border border-cyan-900/20 bg-cyan-50 p-3 text-sm text-cyan-950">

@@ -13,20 +13,20 @@ export default function SettingsPage() {
 
       <div className="space-y-2 text-sm">
         <label className="flex items-center justify-between rounded-lg border border-border/80 p-3">
-          Activar notificaciones automaticas
+          Activar notificaciones automáticas
           <input type="checkbox" checked={alerts} onChange={(event) => setAlerts(event.target.checked)} />
         </label>
 
         <label className="block space-y-1">
           Idioma
           <select className="h-10 w-full rounded-md border border-input px-3" value={language} onChange={(event) => setLanguage(event.target.value)}>
-            <option value="es">Espanol</option>
-            <option value="en">Ingles</option>
+            <option value="es">Español</option>
+            <option value="en">Inglés</option>
           </select>
         </label>
       </div>
 
-      <Button>Guardar configuracion</Button>
+      <Button>Guardar configuración</Button>
     </section>
   );
 }

@@ -26,7 +26,7 @@ import { useHydrated } from "@/lib/use-hydrated";
 
 type AutoPayConfig = {
   enabled: boolean;
-  debitAccount: "Cuenta principal" | "Cuenta nomina";
+  debitAccount: "Cuenta principal" | "Cuenta nómina";
   day: number;
   accountId?: string;
   accountAlias?: string;
@@ -38,7 +38,7 @@ const ACCOUNTS_STORAGE_KEY = "ach-accounts-list";
 const fallbackAccounts: BankAccount[] = [
   {
     id: "AC-001",
-    alias: "Principal nomina",
+    alias: "Principal nómina",
     bank: "Bancolombia",
     accountType: "Ahorros",
     accountNumber: "*******1289",
@@ -184,9 +184,9 @@ export default function BillsPage() {
 
   const serviceIcon = (service: string) => {
     const normalized = service.toLowerCase();
-    if (normalized.includes("energia")) return Zap;
+    if (normalized.includes("energ")) return Zap;
     if (normalized.includes("gas")) return Flame;
-    if (normalized.includes("movil") || normalized.includes("celular")) return Smartphone;
+    if (normalized.includes("móvil") || normalized.includes("celular")) return Smartphone;
     if (normalized.includes("internet")) return Wifi;
     if (normalized.includes("tv")) return Tv;
     return Building2;
@@ -212,7 +212,7 @@ export default function BillsPage() {
       ...prev,
       [autopayBillId]: {
         enabled: true,
-        debitAccount: account?.isPrimary ? "Cuenta principal" : "Cuenta nomina",
+        debitAccount: account?.isPrimary ? "Cuenta principal" : "Cuenta nómina",
         day: autopayDay,
         accountId: autopayAccountId,
         accountAlias: account?.alias,
@@ -295,7 +295,7 @@ export default function BillsPage() {
               type="number"
               min={0}
               className="h-10 rounded-lg border border-input bg-white px-3 text-sm"
-              placeholder="Monto maximo"
+              placeholder="Monto máximo"
               value={maxAmount}
               onChange={(event) => {
                 setMaxAmount(event.target.value);
@@ -333,7 +333,7 @@ export default function BillsPage() {
                   <th className="px-4 py-3">Vence</th>
                   <th className="px-4 py-3 text-right">Monto</th>
                   <th className="px-4 py-3">Autopago</th>
-                  <th className="px-4 py-3">Accion</th>
+                  <th className="px-4 py-3">Acción</th>
                 </tr>
               </thead>
               <tbody>
@@ -381,7 +381,7 @@ export default function BillsPage() {
                                 className="h-8 w-full rounded border border-input bg-white px-2"
                               >
                                 <option>Cuenta principal</option>
-                                <option>Cuenta nomina</option>
+                                <option>Cuenta nómina</option>
                               </select>
                               <input
                                 type="number"
@@ -428,7 +428,7 @@ export default function BillsPage() {
                 <ChevronLeft className="size-4" />
               </Button>
               <span>
-                Pagina {currentPage} de {totalPages}
+                Página {currentPage} de {totalPages}
               </span>
               <Button
                 variant="outline"
@@ -564,7 +564,7 @@ export default function BillsPage() {
       <section className="glass-card flex items-start gap-3 p-4 text-sm">
         <Sparkles className="mt-0.5 size-4 text-secondary" />
         <p className="text-muted-foreground">
-          Facturas futuras: solo activacion de autopago. Facturas activas para pago: pago inmediato y configuracion de autopago.
+          Facturas futuras: solo activación de autopago. Facturas activas para pago: pago inmediato y configuración de autopago.
         </p>
       </section>
 
@@ -652,7 +652,7 @@ export default function BillsPage() {
             </label>
 
             <label className="block text-sm">
-              Dia de cobro
+              Día de cobro
               <input
                 type="number"
                 min={1}

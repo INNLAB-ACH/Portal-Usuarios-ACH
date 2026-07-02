@@ -103,7 +103,7 @@ export default function InstantPaymentsPage() {
     return (
       <div className="fixed inset-0 z-50 grid place-items-center bg-amber-950/30 p-4">
         <section className="w-full max-w-md rounded-2xl border border-amber-500/80 bg-amber-300 px-4 py-5 shadow-xl md:px-5">
-          <p className="text-xs uppercase tracking-[0.25em] text-amber-900/80">Notificacion bancaria</p>
+          <p className="text-xs uppercase tracking-[0.25em] text-amber-900/80">Notificación bancaria</p>
           <h1 className="mt-2 text-xl font-bold text-amber-950">{yellowBank.name}</h1>
           <p className="mt-2 text-sm text-amber-950/90">
             Deseas confirmar el pago solicitado por <strong>{merchantName}</strong>.
@@ -176,12 +176,12 @@ export default function InstantPaymentsPage() {
               <CircleAlert className="mx-auto size-14 text-amber-600" />
             )}
             <h1 className="mt-4 text-2xl font-bold text-primary">
-              {approved ? "Pago confirmado con exito" : "Pago cancelado en banco"}
+              {approved ? "Pago confirmado con éxito" : "Pago cancelado en banco"}
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
               {approved
-                ? "Regresaste al PSE Hub con la confirmacion de tu transaccion."
-                : "La operacion no fue aprobada. Puedes intentarlo de nuevo."}
+                ? "Regresaste al PSE Hub con la confirmación de tu transacción."
+                : "La operación no fue aprobada. Puedes intentarlo de nuevo."}
             </p>
           </div>
 
@@ -244,9 +244,9 @@ export default function InstantPaymentsPage() {
       <section className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
         <article className="glass-card p-4 md:p-5">
           <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">PSE Hub</p>
-          <h1 className="mt-2 text-2xl font-bold text-primary">Pagos instantaneos</h1>
+          <h1 className="mt-2 text-2xl font-bold text-primary">Pagos instantáneos</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Selecciona como deseas continuar la operacion iniciada desde el ecommerce.
+            Selecciona cómo deseas continuar la operación iniciada desde el ecommerce.
           </p>
 
           <div className="mt-4 space-y-3">
@@ -350,7 +350,7 @@ export default function InstantPaymentsPage() {
           {selectedOption === "approved-extension-limit" ? (
             <>
               <h2 className="text-base font-semibold text-primary">Cupo adicional</h2>
-              <p className="mt-1 text-sm text-muted-foreground">Selecciona una opcion de cupo extra disponible.</p>
+              <p className="mt-1 text-sm text-muted-foreground">Selecciona una opción de cupo extra disponible.</p>
               <div className="mt-4 space-y-3">
                 {extraLimitOptions.map((option) => (
                   <article key={option.id} className="rounded-xl border border-cyan-900/20 bg-cyan-50 p-3 text-sm">
@@ -366,13 +366,13 @@ export default function InstantPaymentsPage() {
 
           {selectedOption === "instant-loan-request" ? (
             <>
-              <h2 className="text-base font-semibold text-primary">Prestamo instantaneo</h2>
-              <p className="mt-1 text-sm text-muted-foreground">Proveedores disponibles para desembolso rapido.</p>
+              <h2 className="text-base font-semibold text-primary">Préstamo instantáneo</h2>
+              <p className="mt-1 text-sm text-muted-foreground">Proveedores disponibles para desembolso rápido.</p>
               <div className="mt-4 space-y-3">
                 {instantLoanProviders.map((provider) => (
                   <article key={provider.id} className="rounded-xl border border-amber-900/20 bg-amber-50 p-3 text-sm">
                     <p className="font-semibold text-primary">{provider.name}</p>
-                    <p className="mt-1 text-amber-900/80">Monto maximo: <strong>{formatCurrency(provider.maxAmount)}</strong></p>
+                    <p className="mt-1 text-amber-900/80">Monto máximo: <strong>{formatCurrency(provider.maxAmount)}</strong></p>
                     <p className="text-amber-900/80">{provider.rateLabel}</p>
                     <p className="text-amber-900/80">{provider.payoutTime}</p>
                   </article>

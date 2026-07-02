@@ -17,7 +17,7 @@ const headingFont = Sora({
 
 export const metadata: Metadata = {
   title: "Portal de Usuarios ACH",
-  description: "Portal financiero para transacciones, prestamos y facturas",
+  description: "Portal financiero para transacciones, préstamos y facturas",
 };
 
 export default function RootLayout({

@@ -47,8 +47,8 @@ export type AuthUser = {
   fullName: string;
 };
 
-export type AccountType = "Ahorros" | "Corriente" | "Deposito de bajo monto";
-export type AccountCountry = "Colombia" | "Espana" | "Estados Unidos" | "Mexico" | "Otro";
+export type AccountType = "Ahorros" | "Corriente" | "Depósito de bajo monto";
+export type AccountCountry = "Colombia" | "España" | "Estados Unidos" | "México" | "Otro";
 
 export type BankAccount = {
   id: string;

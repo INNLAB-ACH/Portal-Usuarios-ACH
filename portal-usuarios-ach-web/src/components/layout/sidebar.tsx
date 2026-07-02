@@ -22,10 +22,10 @@ const navItems = [
   { href: "/pse-card", label: "Tarjeta PSE", icon: CreditCard },
   { href: "/accounts", label: "Cuentas", icon: Landmark },
   { href: "/transactions", label: "Transacciones", icon: CreditCard },
-  { href: "/loans", label: "Prestamos", icon: HandCoins },
+  { href: "/loans", label: "Préstamos", icon: HandCoins },
   { href: "/bills", label: "Facturas", icon: ReceiptText },
   { href: "/security-social", label: "Seguridad social", icon: ShieldCheck },
-  { href: "/settings", label: "Configuracion", icon: Settings },
+  { href: "/settings", label: "Configuración", icon: Settings },
 ];
 
 type SidebarProps = {

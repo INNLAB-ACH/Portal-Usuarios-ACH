@@ -22,7 +22,7 @@ export default function TransactionsPage() {
   const scheduledAutoPayments = [
     {
       id: "AP-201",
-      concept: "Factura Energia - Enel",
+      concept: "Factura Energía - Enel",
       frequency: "Mensual",
       debitAccount: "Cuenta principal",
       nextCharge: "2026-04-28",
@@ -31,16 +31,16 @@ export default function TransactionsPage() {
     },
     {
       id: "AP-202",
-      concept: "Plan Movil - Movistar",
+      concept: "Plan Móvil - Movistar",
       frequency: "Mensual",
-      debitAccount: "Cuenta nomina",
+      debitAccount: "Cuenta nómina",
       nextCharge: "2026-05-02",
       amount: 96000,
       status: "Activo",
     },
     {
       id: "AP-203",
-      concept: "Cuota credito - Alkosto",
+      concept: "Cuota crédito - Alkosto",
       frequency: "Quincenal",
       debitAccount: "Cuenta principal",
       nextCharge: "2026-04-30",
@@ -142,7 +142,7 @@ export default function TransactionsPage() {
               <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <input
                 className="h-10 w-full rounded-lg border border-input bg-white pl-9 pr-3 text-sm"
-                placeholder="Buscar por ID o descripcion"
+                placeholder="Buscar por ID o descripción"
                 value={search}
                 onChange={(event) => {
                   setSearch(event.target.value);
@@ -172,7 +172,7 @@ export default function TransactionsPage() {
               type="number"
               min={0}
               className="h-10 rounded-lg border border-input bg-white px-3 text-sm"
-              placeholder="Monto minimo"
+              placeholder="Monto mínimo"
               value={minAmount}
               onChange={(event) => {
                 setMinAmount(event.target.value);
@@ -183,7 +183,7 @@ export default function TransactionsPage() {
               type="number"
               min={0}
               className="h-10 rounded-lg border border-input bg-white px-3 text-sm"
-              placeholder="Monto maximo"
+              placeholder="Monto máximo"
               value={maxAmount}
               onChange={(event) => {
                 setMaxAmount(event.target.value);
@@ -202,7 +202,7 @@ export default function TransactionsPage() {
               <tr className="bg-muted/45 text-left text-xs uppercase tracking-wide text-muted-foreground">
                 <th className="px-4 py-3">ID</th>
                 <th className="px-4 py-3">Fecha</th>
-                <th className="px-4 py-3">Descripcion</th>
+                <th className="px-4 py-3">Descripción</th>
                 <th className="px-4 py-3">Tipo</th>
                 <th className="px-4 py-3">Estado</th>
                 <th className="px-4 py-3 text-right">Monto</th>
@@ -249,7 +249,7 @@ export default function TransactionsPage() {
               <ChevronLeft className="size-4" />
             </Button>
             <span className="min-w-20 text-center">
-              Pagina {currentPage} de {totalPages}
+              Página {currentPage} de {totalPages}
             </span>
             <Button
               variant="outline"
@@ -265,7 +265,7 @@ export default function TransactionsPage() {
 
       <section className="glass-card overflow-hidden">
         <div className="border-b border-border/80 px-4 py-3">
-          <h2 className="font-semibold">Pagos automaticos programados</h2>
+          <h2 className="font-semibold">Pagos automáticos programados</h2>
           <p className="text-xs text-muted-foreground">Control de debitos recurrentes configurados</p>
         </div>
 
@@ -277,10 +277,10 @@ export default function TransactionsPage() {
                 <th className="px-4 py-3">Concepto</th>
                 <th className="px-4 py-3">Frecuencia</th>
                 <th className="px-4 py-3">Cuenta</th>
-                <th className="px-4 py-3">Proximo cobro</th>
+                <th className="px-4 py-3">Próximo cobro</th>
                 <th className="px-4 py-3 text-right">Monto</th>
                 <th className="px-4 py-3">Estado</th>
-                <th className="px-4 py-3">Accion</th>
+                <th className="px-4 py-3">Acción</th>
               </tr>
             </thead>
             <tbody>

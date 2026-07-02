@@ -11,7 +11,7 @@ const ACCOUNTS_STORAGE_KEY = "ach-accounts-list";
 const initialAccounts: BankAccount[] = [
   {
     id: "AC-001",
-    alias: "Principal nomina",
+    alias: "Principal nómina",
     bank: "Bancolombia",
     accountType: "Ahorros",
     accountNumber: "*******1289",
@@ -30,10 +30,10 @@ const initialAccounts: BankAccount[] = [
   {
     id: "AC-003",
     alias: "Cuenta internacional",
-    bank: "BBVA Espana",
+    bank: "BBVA España",
     accountType: "Ahorros",
     accountNumber: "ES91***********",
-    country: "Espana",
+    country: "España",
     isPrimary: false,
   },
 ];
@@ -116,7 +116,7 @@ export default function AccountsPage() {
         </article>
         <article className="glass-card p-4">
           <p className="text-xs uppercase tracking-wide text-muted-foreground">Tipos habilitados</p>
-          <p className="mt-2 text-lg font-semibold">Ahorros, Corriente, Deposito de bajo monto</p>
+          <p className="mt-2 text-lg font-semibold">Ahorros, Corriente, Depósito de bajo monto</p>
         </article>
       </section>
 
@@ -126,7 +126,7 @@ export default function AccountsPage() {
             <h2 className="font-semibold">Listado de cuentas y bancos</h2>
             <div className="flex items-center gap-2">
               <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 text-xs text-primary">
-                <WalletCards className="size-3.5" /> Gestion activa
+                <WalletCards className="size-3.5" /> Gestión activa
               </span>
               <Button size="sm" className="gap-1" onClick={() => setOpenAddModal(true)}>
                 <Plus className="size-4" /> Agregar cuenta
@@ -140,8 +140,8 @@ export default function AccountsPage() {
                   <th className="px-4 py-3">Alias</th>
                   <th className="px-4 py-3">Banco</th>
                   <th className="px-4 py-3">Tipo</th>
-                  <th className="px-4 py-3">Numero</th>
-                  <th className="px-4 py-3">Pais</th>
+                  <th className="px-4 py-3">Número</th>
+                  <th className="px-4 py-3">País</th>
                   <th className="px-4 py-3">Marca</th>
                 </tr>
               </thead>
@@ -205,7 +205,7 @@ export default function AccountsPage() {
               >
                 <option>Ahorros</option>
                 <option>Corriente</option>
-                <option>Deposito de bajo monto</option>
+                <option>Depósito de bajo monto</option>
               </select>
 
               <select
@@ -214,9 +214,9 @@ export default function AccountsPage() {
                 onChange={(event) => setCountry(event.target.value as AccountCountry)}
               >
                 <option>Colombia</option>
-                <option>Espana</option>
+                <option>España</option>
                 <option>Estados Unidos</option>
-                <option>Mexico</option>
+                <option>México</option>
                 <option>Otro</option>
               </select>
             </div>
@@ -232,7 +232,7 @@ export default function AccountsPage() {
 
             <input
               className="h-10 w-full rounded-md border border-input px-3 text-sm"
-              placeholder="Numero de cuenta"
+              placeholder="Número de cuenta"
               value={number}
               onChange={(event) => setNumber(event.target.value)}
             />
@@ -256,7 +256,7 @@ export default function AccountsPage() {
             </div>
 
             <p className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-              <Globe2 className="size-3.5" /> Soporta cuentas en Espana, Estados Unidos, Mexico y otros paises.
+              <Globe2 className="size-3.5" /> Soporta cuentas en España, Estados Unidos, México y otros países.
             </p>
           </form>
         </div>

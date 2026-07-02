@@ -23,8 +23,8 @@ export default function LoansPage() {
   const [activeLoanId, setActiveLoanId] = useState<string | null>(null);
   const [scheduleLoanId, setScheduleLoanId] = useState<string | null>(null);
   const [paymentDay, setPaymentDay] = useState(25);
-  const [paymentAccount, setPaymentAccount] = useState<"Cuenta principal" | "Cuenta nomina">("Cuenta principal");
-  const [scheduledPayments, setScheduledPayments] = useState<Record<string, { day: number; account: "Cuenta principal" | "Cuenta nomina" }>>({});
+  const [paymentAccount, setPaymentAccount] = useState<"Cuenta principal" | "Cuenta nómina">("Cuenta principal");
+  const [scheduledPayments, setScheduledPayments] = useState<Record<string, { day: number; account: "Cuenta principal" | "Cuenta nómina" }>>({});
   const selectedLoan = loans.find((loan) => loan.id === activeLoanId) ?? null;
   const selectedLoanForSchedule = loans.find((loan) => loan.id === scheduleLoanId) ?? null;
   const activeLoans = loans.filter((loan) => loan.status === "Activo" && loan.usedQuota > 0);
@@ -50,7 +50,7 @@ export default function LoansPage() {
   }));
 
   const creditOffers = [
-    { id: "OF-01", store: "Exito", category: "Hogar", approved: 4200000, fee: "1.45% MV" },
+    { id: "OF-01", store: "Éxito", category: "Hogar", approved: 4200000, fee: "1.45% MV" },
     { id: "OF-02", store: "Falabella", category: "Tecnologia", approved: 5800000, fee: "1.35% MV" },
     { id: "OF-03", store: "Homecenter", category: "Remodelacion", approved: 3600000, fee: "1.55% MV" },
     { id: "OF-04", store: "Alkosto", category: "Electro", approved: 6900000, fee: "1.40% MV" },
@@ -90,7 +90,7 @@ export default function LoansPage() {
       <section className="grid gap-4 xl:grid-cols-[1.25fr_0.75fr]">
         <article className="glass-card p-4 md:p-5">
           <h2 className="text-base font-semibold">Deuda en el tiempo</h2>
-          <p className="text-xs text-muted-foreground">Evolucion mensual de la deuda activa y pagos</p>
+          <p className="text-xs text-muted-foreground">Evolución mensual de la deuda activa y pagos</p>
           <div className="mt-3 h-[260px]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={debtEvolution}>
@@ -130,7 +130,7 @@ export default function LoansPage() {
       <section className="grid gap-4 xl:grid-cols-[1.5fr_0.5fr]">
         <article className="glass-card overflow-hidden">
           <div className="border-b border-border/80 px-4 py-3">
-            <h2 className="font-semibold">Creditos activos por pagar</h2>
+            <h2 className="font-semibold">Créditos activos por pagar</h2>
             <p className="text-xs text-muted-foreground">Gestiona pago inmediato o programa la cuota mensual</p>
           </div>
 
@@ -141,7 +141,7 @@ export default function LoansPage() {
                   <div className="flex items-start justify-between gap-2">
                     <div>
                       <h3 className="font-semibold text-primary">{loan.store}</h3>
-                      <p className="text-xs text-muted-foreground">Prestamo {loan.id}</p>
+                      <p className="text-xs text-muted-foreground">Préstamo {loan.id}</p>
                     </div>
                     <span className="rounded-full bg-green-100 px-2 py-1 text-xs text-green-700">Activo</span>
                   </div>
@@ -173,7 +173,7 @@ export default function LoansPage() {
               ))
             ) : (
               <p className="rounded-lg border border-dashed border-border p-5 text-center text-sm text-muted-foreground">
-                No hay creditos activos por pagar en este momento.
+                No hay créditos activos por pagar en este momento.
               </p>
             )}
           </div>
@@ -181,8 +181,8 @@ export default function LoansPage() {
 
         <aside className="glass-card overflow-hidden">
           <div className="border-b border-border/80 px-4 py-3">
-            <h2 className="font-semibold">Ofertas de credito</h2>
-            <p className="text-xs text-muted-foreground">Tiendas y categorias destacadas</p>
+            <h2 className="font-semibold">Ofertas de crédito</h2>
+            <p className="text-xs text-muted-foreground">Tiendas y categorías destacadas</p>
           </div>
 
           <div className="space-y-2 p-3">
@@ -201,7 +201,7 @@ export default function LoansPage() {
 
           <div className="border-t border-border/70 bg-muted/25 px-3 py-2">
             <p className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
-              <Sparkles className="size-3.5 text-secondary" /> Oferta sujeta a evaluacion de riesgo.
+              <Sparkles className="size-3.5 text-secondary" /> Oferta sujeta a evaluación de riesgo.
             </p>
           </div>
         </aside>
@@ -209,11 +209,11 @@ export default function LoansPage() {
 
       {selectedLoan ? (
         <PaymentWizard
-          title={`Pago de credito - ${selectedLoan.store}`}
+          title={`Pago de crédito - ${selectedLoan.store}`}
           items={[
             {
               id: selectedLoan.id,
-              name: `Cuota prestamo ${selectedLoan.id}`,
+              name: `Cuota préstamo ${selectedLoan.id}`,
               amount: selectedLoan.installmentValue || 180000,
             },
           ]}
@@ -225,7 +225,7 @@ export default function LoansPage() {
         <div className="fixed inset-0 z-40 grid place-items-center bg-black/35 p-4">
           <div className="glass-card w-full max-w-md space-y-4 border border-primary/20 bg-white p-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-primary">Programar pago de credito</h3>
+              <h3 className="text-lg font-semibold text-primary">Programar pago de crédito</h3>
               <button
                 type="button"
                 className="rounded-md p-1 hover:bg-muted"
@@ -237,7 +237,7 @@ export default function LoansPage() {
             </div>
 
             <p className="text-sm text-muted-foreground">
-              {selectedLoanForSchedule.store} - Prestamo {selectedLoanForSchedule.id}
+              {selectedLoanForSchedule.store} - Préstamo {selectedLoanForSchedule.id}
             </p>
 
             <label className="block text-sm">
@@ -245,15 +245,15 @@ export default function LoansPage() {
               <select
                 className="mt-1 h-10 w-full rounded-md border border-input bg-white px-3"
                 value={paymentAccount}
-                onChange={(event) => setPaymentAccount(event.target.value as "Cuenta principal" | "Cuenta nomina")}
+                onChange={(event) => setPaymentAccount(event.target.value as "Cuenta principal" | "Cuenta nómina")}
               >
                 <option>Cuenta principal</option>
-                <option>Cuenta nomina</option>
+                <option>Cuenta nómina</option>
               </select>
             </label>
 
             <label className="block text-sm">
-              Dia de cobro
+              Día de cobro
               <input
                 type="number"
                 min={1}
@@ -266,7 +266,7 @@ export default function LoansPage() {
 
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setScheduleLoanId(null)}>Cancelar</Button>
-              <Button onClick={saveScheduledPayment}>Guardar programacion</Button>
+              <Button onClick={saveScheduledPayment}>Guardar programación</Button>
             </div>
           </div>
         </div>
