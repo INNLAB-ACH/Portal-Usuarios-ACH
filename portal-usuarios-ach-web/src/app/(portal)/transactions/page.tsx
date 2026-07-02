@@ -108,7 +108,7 @@ export default function TransactionsPage() {
       <section className="glass-card space-y-4 p-4">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="flex flex-wrap gap-2">
-            {(["Todas", "Transferencia", "Pago", "Recaudo", "Debito Automatico"] as const).map((type) => (
+            {(["Todas", "Transferencia", "Pago", "Recaudo", "Débito Automático"] as const).map((type) => (
               <Button
                 key={type}
                 variant={filter === type ? "default" : "outline"}
@@ -266,7 +266,7 @@ export default function TransactionsPage() {
       <section className="glass-card overflow-hidden">
         <div className="border-b border-border/80 px-4 py-3">
           <h2 className="font-semibold">Pagos automáticos programados</h2>
-          <p className="text-xs text-muted-foreground">Control de debitos recurrentes configurados</p>
+          <p className="text-xs text-muted-foreground">Control de débitos recurrentes configurados</p>
         </div>
 
         <div className="overflow-x-auto">

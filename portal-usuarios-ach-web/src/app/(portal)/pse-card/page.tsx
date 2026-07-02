@@ -64,7 +64,7 @@ export default function PseCardPage() {
           <p className="text-xs uppercase tracking-[0.25em] text-amber-900/80">Notificación bancaria</p>
           <h1 className="mt-2 text-xl font-bold text-amber-950">{yellowBank.name}</h1>
           <p className="mt-2 text-sm text-amber-950/90">
-            Deseas confirmar la recarga para generar tu tarjeta debito virtual PSE.
+            Deseas confirmar la recarga para generar tu tarjeta débito virtual PSE.
           </p>
 
           <div className="mt-4 space-y-2 rounded-xl border border-amber-800/25 bg-amber-100/80 p-3 text-sm text-amber-950">
@@ -154,7 +154,7 @@ export default function PseCardPage() {
             <CheckCircle2 className="mx-auto size-14 text-green-600" />
             <h1 className="mt-4 text-2xl font-bold text-primary">Tarjeta virtual generada</h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              Tu tarjeta debito virtual PSE quedo creada y recargada correctamente.
+              Tu tarjeta débito virtual PSE quedo creada y recargada correctamente.
             </p>
           </div>
 
@@ -216,7 +216,7 @@ export default function PseCardPage() {
       </section>
 
       <section className="glass-card p-4 md:p-5">
-        <h2 className="text-xl font-bold text-primary">Genera tu tarjeta debito virtual</h2>
+        <h2 className="text-xl font-bold text-primary">Genera tu tarjeta débito virtual</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           Define el monto de recarga y selecciona la cuenta de origen para continuar.
         </p>

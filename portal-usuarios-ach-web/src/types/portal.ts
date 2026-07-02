@@ -1,4 +1,4 @@
-export type TransactionType = "Transferencia" | "Pago" | "Recaudo" | "Debito Automatico";
+export type TransactionType = "Transferencia" | "Pago" | "Recaudo" | "Débito Automático";
 
 export type Transaction = {
   id: string;

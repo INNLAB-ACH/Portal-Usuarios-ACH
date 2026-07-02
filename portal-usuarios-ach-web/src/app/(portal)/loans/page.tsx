@@ -241,7 +241,7 @@ export default function LoansPage() {
             </p>
 
             <label className="block text-sm">
-              Cuenta de debito
+              Cuenta de débito
               <select
                 className="mt-1 h-10 w-full rounded-md border border-input bg-white px-3"
                 value={paymentAccount}
